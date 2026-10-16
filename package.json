@@ -1,0 +1,26 @@
+{
+  "name": "macos-27-base-ui-theme",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc -b && vite build",
+    "build:theme": "vite build --config vite.lib.config.ts && tsc -p tsconfig.lib.json",
+    "preview": "vite preview --host 127.0.0.1",
+    "symbols": "SWIFT_MODULE_CACHE_PATH=/private/tmp CLANG_MODULE_CACHE_PATH=/private/tmp swift scripts/export-sf-symbols.swift"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.9.0",
+    "@cornerkit/core": "file:vendor/cornerkit-core",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.1.0",
+    "typescript": "~5.9.3",
+    "vite": "^7.3.0"
+  }
+}

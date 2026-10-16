@@ -1,0 +1,87 @@
+import './theme.css';
+
+export { SfSymbol } from './symbols';
+export type { SfSymbolProps } from './symbols';
+export { MacPopoverArrowShape } from './PopoverArrowShape';
+export { installMacCorners } from './corners';
+
+/** Class names used on Base UI primitives. Theme styles are in `theme.css`. */
+export const mac = {
+  window: 'mac-window-frame',
+  windowShadowHost: 'mac-window-shadow-host',
+  sidebarSurface: 'mac-sidebar-surface',
+  toolbarSurface: 'mac-toolbar-surface',
+  groupedSurface: 'mac-grouped-surface',
+  sidebarRow: 'mac-sidebar-row',
+  button: 'mac-button',
+  iconButton: 'mac-icon-button',
+  iconButtonSurface: 'mac-icon-button-surface',
+  iconButtonBorder: 'mac-icon-button-border',
+  input: 'mac-input',
+  inputFrame: 'mac-input-frame',
+  inputSurface: 'mac-input-surface',
+  inputBorder: 'mac-input-border',
+  select: {
+    trigger: 'mac-select-trigger',
+    icon: 'mac-select-icon',
+    positioner: 'mac-positioner mac-select-positioner',
+    popup: 'mac-popup mac-select-popup',
+    backdrop: 'mac-popup-backdrop',
+    border: 'mac-popup-border',
+    scrollArrow: 'mac-select-scroll-arrow',
+    list: 'mac-select-list',
+    item: 'mac-menu-item mac-select-item',
+    itemIndicator: 'mac-select-item-indicator',
+    itemText: 'mac-select-item-text',
+  },
+  switch: { root: 'mac-switch', thumb: 'mac-switch-thumb' },
+  checkbox: { root: 'mac-checkbox', surface: 'mac-checkbox-surface', border: 'mac-checkbox-border', indicator: 'mac-checkbox-indicator' },
+  radio: { root: 'mac-radio', indicator: 'mac-radio-indicator' },
+  tabs: { list: 'mac-segmented', surface: 'mac-segmented-surface', border: 'mac-segmented-border', tab: 'mac-segmented-tab', panel: 'mac-tab-panel' },
+  slider: {
+    control: 'mac-slider-control',
+    track: 'mac-slider-track',
+    indicator: 'mac-slider-indicator',
+    ticks: 'mac-slider-ticks',
+    thumb: 'mac-slider-thumb',
+  },
+  menu: {
+    positioner: 'mac-positioner mac-menu-positioner',
+    popup: 'mac-popup mac-menu-popup',
+    backdrop: 'mac-popup-backdrop',
+    border: 'mac-popup-border',
+    item: 'mac-menu-item',
+  },
+  popover: {
+    positioner: 'mac-positioner mac-popover-positioner',
+    popup: 'mac-popover-popup',
+    surface: 'mac-popover-surface',
+    border: 'mac-popover-border',
+    arrow: 'mac-popover-arrow',
+    content: 'mac-popover-content',
+    title: 'mac-popover-title',
+    search: 'mac-popover-search',
+    tags: 'mac-popover-tags',
+    tag: 'mac-popover-tag',
+  },
+  dialog: {
+    backdrop: 'mac-dialog-backdrop',
+    viewport: 'mac-dialog-viewport',
+    shadowHost: 'mac-dialog-shadow-host',
+    popup: 'mac-dialog-popup',
+    surface: 'mac-dialog-surface',
+    border: 'mac-dialog-border',
+    content: 'mac-dialog-content',
+    icon: 'mac-dialog-icon',
+    title: 'mac-dialog-title',
+    description: 'mac-dialog-description',
+    actions: 'mac-dialog-actions',
+  },
+  tooltip: {
+    positioner: 'mac-positioner mac-tooltip-positioner',
+    popup: 'mac-tooltip-popup',
+    surface: 'mac-tooltip-surface',
+    border: 'mac-tooltip-border',
+    content: 'mac-tooltip-content',
+  },
+} as const;
