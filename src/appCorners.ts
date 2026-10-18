@@ -17,8 +17,6 @@ export const appCornerTargets = [
   '.surface-sample',
   '.notice',
   '.mail-sidebar-item',
-  '.mail-search-suggestions',
-  '.mail-suggestion',
   '.mail-message-row[data-selected]',
   '.mail-message-row:hover',
   '.settings-inner-window',

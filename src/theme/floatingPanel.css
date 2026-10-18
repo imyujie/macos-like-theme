@@ -1,0 +1,64 @@
+/* Keep the container unclipped so content, arrows and shadows can overflow.
+   Only the material and outline layers own the continuous silhouette. The
+   semantic selectors also support existing markup using the original classes. */
+.mac-floating-panel,
+.mac-select-popup,
+.mac-menu-popup,
+.mac-popover-popup {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+  border: 0;
+  border-radius: var(--mac-floating-panel-radius);
+  background: transparent;
+  color: var(--mac-text);
+  box-shadow: var(--mac-floating-panel-shadow);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  outline: none;
+  transform-origin: var(--transform-origin);
+}
+:is(.mac-floating-panel, .mac-select-popup, .mac-menu-popup, .mac-popover-popup):has(> .mac-floating-panel-shadow) { box-shadow: none; }
+.mac-floating-panel[data-size="compact"] { --mac-floating-panel-radius: 12px; }
+
+.mac-floating-panel-surface,
+.mac-floating-panel-border,
+.mac-popup-backdrop,
+.mac-popup-border,
+.mac-popover-surface,
+.mac-popover-border {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--mac-floating-panel-radius);
+  pointer-events: none;
+}
+.mac-floating-panel-surface,
+.mac-popup-backdrop,
+.mac-popover-surface {
+  z-index: var(--mac-floating-panel-surface-z, -1);
+  background: var(--mac-floating-panel-material);
+  box-shadow: inset 0 1px 0 var(--mac-floating-panel-edge-top), inset 0 -1px 0 var(--mac-floating-panel-edge-bottom);
+  backdrop-filter: blur(var(--mac-floating-panel-blur)) saturate(var(--mac-floating-panel-saturation));
+  -webkit-backdrop-filter: blur(var(--mac-floating-panel-blur)) saturate(var(--mac-floating-panel-saturation));
+}
+:is(.mac-floating-panel-surface, .mac-popup-backdrop, .mac-popover-surface)[data-mac-corners="clippath"] { box-shadow: none; }
+.mac-floating-panel-border,
+.mac-popup-border,
+.mac-popover-border {
+  z-index: var(--mac-floating-panel-border-z, 1);
+  border: .5px solid var(--mac-floating-panel-outline);
+}
+:is(.mac-floating-panel-border, .mac-popup-border, .mac-popover-border)[data-mac-corners="clippath"] { border-width: 0; }
+:is(.mac-floating-panel-border, .mac-popup-border, .mac-popover-border) > [data-squircle-border] { --squircle-border-z: 0; }
+.mac-floating-panel-content,
+.mac-popover-content { position: relative; z-index: 0; }
+
+@media (prefers-reduced-transparency: reduce) {
+  .mac-floating-panel-surface,
+  .mac-popup-backdrop,
+  .mac-popover-surface {
+    background: var(--mac-window);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

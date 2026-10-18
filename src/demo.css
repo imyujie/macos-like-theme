@@ -163,7 +163,9 @@ button, input { -webkit-tap-highlight-color: transparent; }
 .surface-sample span { color: var(--mac-text-tertiary); font-size: 10px; }
 .window-surface { background: var(--mac-window); }
 .group-surface { background: var(--mac-group); }
-.glass-surface { background: var(--mac-glass-strong); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
+/* Renamed from `.glass-surface`: that class belongs to the LiquidGlass engine,
+   and styling it here gave every glass instance an extra opaque backdrop blur. */
+.sample-glass-surface { background: var(--mac-glass-strong); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
 .type-samples { display: grid; gap: 11px; }
 .type-sample { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
 .type-sample > span:last-child { color: var(--mac-text-tertiary); font-size: 10px; white-space: nowrap; }
@@ -211,5 +213,5 @@ button, input { -webkit-tap-highlight-color: transparent; }
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .sidebar, .window-toolbar, .toolbar-sample, .glass-surface, .notice { backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .sidebar, .window-toolbar, .toolbar-sample, .sample-glass-surface, .notice { backdrop-filter: none; -webkit-backdrop-filter: none; }
 }

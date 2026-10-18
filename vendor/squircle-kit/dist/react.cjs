@@ -1,0 +1,578 @@
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// src/react.js
+var react_exports = {};
+__export(react_exports, {
+  Squircle: () => Squircle,
+  default: () => react_default,
+  useSquircle: () => useSquircle
+});
+module.exports = __toCommonJS(react_exports);
+var import_react = require("react");
+
+// src/path.js
+var PI = Math.PI;
+var pt = (x, y) => ({ x, y });
+var add = (a, b) => pt(a.x + b.x, a.y + b.y);
+function quarterRotate(p, q) {
+  switch ((q % 4 + 4) % 4) {
+    case 0:
+      return pt(p.x, p.y);
+    case 1:
+      return pt(-p.y, p.x);
+    case 2:
+      return pt(-p.x, -p.y);
+    default:
+      return pt(p.y, -p.x);
+  }
+}
+var lengthForCornerSmoothness = (s, r) => (1 + s) * r;
+var smoothnessForCornerLength = (len, r) => len / r - 1;
+function curveGeometry(radius, smoothness) {
+  const edgeConnecting = lengthForCornerSmoothness(smoothness, radius);
+  const arcAngle = PI / 4 * smoothness;
+  const arcConnecting = pt(
+    (1 - Math.sin(arcAngle)) * radius,
+    (1 - Math.cos(arcAngle)) * radius
+  );
+  const arcCurve = (1 - Math.tan(arcAngle / 2)) * radius;
+  const EDGE_CURVE_POINT_RATIO = 2 / 3;
+  const edgeCurve = edgeConnecting - (edgeConnecting - arcCurve) * EDGE_CURVE_POINT_RATIO;
+  return { edgeConnecting, arcConnecting, arcCurve, edgeCurve };
+}
+function cornerPoints(radius, s1, s2, corner, rot) {
+  const c1 = curveGeometry(radius, s1);
+  const c2 = curveGeometry(radius, s2);
+  const R = (v, q) => add(corner, quarterRotate(v, q));
+  return {
+    start: R(pt(c1.edgeConnecting, 0), rot + 1),
+    // first cubic (edge -> arc)
+    c1a: R(pt(c1.edgeCurve, 0), rot + 1),
+    c1b: R(pt(c1.arcCurve, 0), rot + 1),
+    arcStart: R(pt(c1.arcConnecting.y, c1.arcConnecting.x), rot),
+    // circular arc
+    arcEnd: R(c2.arcConnecting, rot),
+    // second cubic (arc -> edge)
+    c2a: R(pt(c2.arcCurve, 0), rot),
+    c2b: R(pt(c2.edgeCurve, 0), rot),
+    end: R(pt(c2.edgeConnecting, 0), rot),
+    radius,
+    s1,
+    s2
+  };
+}
+function constrainSmoothness(size, smoothness, r1, r2) {
+  if (r1 === 0 && r2 === 0) return [0, 0];
+  const need = lengthForCornerSmoothness(smoothness, r1) + lengthForCornerSmoothness(smoothness, r2);
+  if (need <= size) return [smoothness, smoothness];
+  const ratio = r1 / (r1 + r2);
+  const l1 = size * ratio;
+  const l2 = size - l1;
+  return [
+    r1 === 0 ? 0 : Math.min(smoothness, Math.max(smoothnessForCornerLength(l1, r1), 0)),
+    r2 === 0 ? 0 : Math.min(smoothness, Math.max(smoothnessForCornerLength(l2, r2), 0))
+  ];
+}
+function constrainRadii(width, height, radii) {
+  const { tl, tr, br, bl } = radii;
+  let f = 1;
+  for (const [a, b, max] of [[tl, tr, width], [bl, br, width], [tl, bl, height], [tr, br, height]]) {
+    if (a + b > 0) f = Math.min(f, max / (a + b));
+  }
+  const k = (v) => Math.max(0, (v || 0) * f);
+  return { tl: k(tl), tr: k(tr), br: k(br), bl: k(bl) };
+}
+function normalizeRadii(radius) {
+  if (radius == null) return { tl: 0, tr: 0, br: 0, bl: 0 };
+  if (typeof radius === "number") return { tl: radius, tr: radius, br: radius, bl: radius };
+  if (Array.isArray(radius)) {
+    const [a, b = a, c = a, d = b] = radius;
+    return { tl: +a || 0, tr: +b || 0, br: +c || 0, bl: +d || 0 };
+  }
+  return { tl: +radius.tl || 0, tr: +radius.tr || 0, br: +radius.br || 0, bl: +radius.bl || 0 };
+}
+function computeCorners(x, y, width, height, smoothness, radius) {
+  const s = Math.min(Math.max(+smoothness || 0, 0), 1);
+  const { tl, tr, br, bl } = constrainRadii(width, height, normalizeRadii(radius));
+  const [topL, topR] = constrainSmoothness(width, s, tl, tr);
+  const [rightT, rightB] = constrainSmoothness(height, s, tr, br);
+  const [botL, botR] = constrainSmoothness(width, s, bl, br);
+  const [leftT, leftB] = constrainSmoothness(height, s, tl, bl);
+  return [
+    cornerPoints(tl, leftT, topL, pt(x, y), 0),
+    cornerPoints(tr, topR, rightT, pt(x + width, y), 1),
+    cornerPoints(br, rightB, botR, pt(x + width, y + height), 2),
+    cornerPoints(bl, botL, leftB, pt(x, y + height), 3)
+  ];
+}
+var n = (v, p) => {
+  const k = 10 ** p;
+  const r = Math.round(v * k) / k;
+  return Object.is(r, -0) ? 0 : r;
+};
+function smoothRoundRectPath(x, y, width, height, smoothness, radius, opts = {}) {
+  if (!(width > 0) || !(height > 0)) return "";
+  const p = opts.precision ?? 3;
+  const P = (q) => `${n(q.x, p)},${n(q.y, p)}`;
+  const out = [];
+  computeCorners(x, y, width, height, smoothness, radius).forEach((c, i) => {
+    const r = n(c.radius, p);
+    out.push(
+      `${i === 0 ? "M" : "L"}${P(c.start)}`,
+      `C${P(c.c1a)} ${P(c.c1b)} ${P(c.arcStart)}`,
+      `A${r},${r} 0 0 1 ${P(c.arcEnd)}`,
+      `C${P(c.c2a)} ${P(c.c2b)} ${P(c.end)}`
+    );
+  });
+  out.push("Z");
+  return out.join("");
+}
+
+// src/core.js
+var isBrowser = typeof window !== "undefined" && typeof document !== "undefined";
+var SVG_NS = "http://www.w3.org/2000/svg";
+var OVERLAY_ATTR = "data-squircle-border";
+var uid = 0;
+function systemSmoothing() {
+  if (!isBrowser) return 0;
+  const nav = navigator;
+  const p = nav.userAgentData && nav.userAgentData.platform || nav.platform || nav.userAgent || "";
+  return /mac|iphone|ipad|ipod/i.test(p) ? 0.6 : 0;
+}
+function parseSmoothing(v) {
+  if (v == null || v === "") return void 0;
+  if (typeof v === "number") return clamp01(v > 1 ? v / 100 : v);
+  const s = String(v).trim().toLowerCase();
+  if (s === "system-ui" || s === "auto") return systemSmoothing();
+  if (s === "none") return 0;
+  if (s.endsWith("%")) return clamp01(parseFloat(s) / 100);
+  const f = parseFloat(s);
+  return Number.isFinite(f) ? clamp01(f > 1 ? f / 100 : f) : void 0;
+}
+var clamp01 = (x) => Math.min(1, Math.max(0, x || 0));
+function parseRadius(v) {
+  if (v == null || v === "") return void 0;
+  if (v === "css" || v === "auto") return "css";
+  if (typeof v === "string") {
+    const parts = v.trim().split(/[\s,]+/).map(parseFloat).filter(Number.isFinite);
+    return parts.length === 1 ? parts[0] : parts.length ? parts : void 0;
+  }
+  return v;
+}
+function supportsClipPath() {
+  if (!isBrowser || !window.CSS || !CSS.supports) return false;
+  return CSS.supports("clip-path", 'path("M0 0L1 0L1 1Z")');
+}
+function toElements(target) {
+  if (!isBrowser || target == null) return [];
+  if (typeof target === "string") return Array.from(document.querySelectorAll(target));
+  if (target instanceof Element) return [target];
+  if (typeof target.length === "number") return Array.from(target).filter((n2) => n2 instanceof Element);
+  return [];
+}
+function readCssRadii(el, w, h) {
+  const cs = getComputedStyle(el);
+  const one = (prop) => {
+    const raw = cs.getPropertyValue(prop).trim();
+    if (!raw) return 0;
+    const [a, b = a] = raw.split(/\s+/);
+    const px = (t, ref) => t.endsWith("%") ? parseFloat(t) / 100 * ref : parseFloat(t) || 0;
+    return Math.min(px(a, w), px(b, h));
+  };
+  return {
+    tl: one("border-top-left-radius"),
+    tr: one("border-top-right-radius"),
+    br: one("border-bottom-right-radius"),
+    bl: one("border-bottom-left-radius")
+  };
+}
+function readDataConfig(el) {
+  const d = el.dataset;
+  const cfg = {};
+  const r = parseRadius(d.squircleRadius ?? (d.squircle && d.squircle !== "true" ? d.squircle : void 0));
+  if (r !== void 0) cfg.radius = r;
+  const s = parseSmoothing(d.squircleSmoothing);
+  if (s !== void 0) cfg.smoothing = s;
+  if (d.squircleBorderWidth || d.squircleBorderColor || d.squircleBorderStyle) {
+    cfg.border = {
+      width: parseFloat(d.squircleBorderWidth) || 1,
+      color: d.squircleBorderColor,
+      style: d.squircleBorderStyle
+    };
+  }
+  return cfg;
+}
+var DEFAULTS = Object.freeze({
+  radius: "css",
+  smoothing: 0.6,
+  border: null,
+  precision: 2
+});
+var SmoothCorners = class {
+  /** @param {Partial<import('./index').SmoothCornersConfig>} [defaults] */
+  constructor(defaults = {}) {
+    this.defaults = { ...DEFAULTS, ...defaults };
+    this._registry = /* @__PURE__ */ new WeakMap();
+    this._tracked = /* @__PURE__ */ new Set();
+    this._supported = supportsClipPath();
+    this._ro = isBrowser && "ResizeObserver" in window ? new ResizeObserver((entries) => {
+      for (const e of entries) {
+        const st = this._registry.get(e.target);
+        if (!st) continue;
+        const box = e.borderBoxSize && e.borderBoxSize[0];
+        const w = box ? box.inlineSize : e.target.offsetWidth;
+        const h = box ? box.blockSize : e.target.offsetHeight;
+        this._render(e.target, st, w, h);
+      }
+    }) : null;
+    this._mo = null;
+  }
+  /** Apply to a selector, element, or list. Re-applying merges config. */
+  apply(target, config = {}) {
+    for (const el of toElements(target)) this._attach(el, config);
+    return this;
+  }
+  /** Apply the same config to many targets. */
+  applyAll(target, config = {}) {
+    return this.apply(target, config);
+  }
+  /**
+   * Picks up every `[data-squircle]` element. With `{ observe: true }` it also
+   * watches the DOM and attaches/detaches as nodes come and go.
+   */
+  auto({ root = isBrowser ? document : null, observe = false } = {}) {
+    if (!root) return 0;
+    const els = root.querySelectorAll("[data-squircle]");
+    els.forEach((el) => this._attach(el, {}, true));
+    if (observe && !this._mo && "MutationObserver" in window) {
+      this._mo = new MutationObserver((muts) => {
+        for (const m of muts) {
+          if (m.type === "attributes") {
+            const el = m.target;
+            if (el.hasAttribute("data-squircle")) this._attach(el, {}, true);
+            else if (this._registry.has(el)) this.remove(el);
+            continue;
+          }
+          m.addedNodes.forEach((n2) => {
+            if (!(n2 instanceof Element)) return;
+            if (n2.matches("[data-squircle]")) this._attach(n2, {}, true);
+            n2.querySelectorAll("[data-squircle]").forEach((c) => this._attach(c, {}, true));
+          });
+          m.removedNodes.forEach((n2) => {
+            if (!(n2 instanceof Element) || n2.isConnected) return;
+            if (this._registry.has(n2)) this.remove(n2);
+            n2.querySelectorAll("[data-squircle]").forEach((c) => this._registry.has(c) && this.remove(c));
+          });
+        }
+      });
+      this._mo.observe(root === document ? document.documentElement : root, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: [
+          "data-squircle",
+          "data-squircle-radius",
+          "data-squircle-smoothing",
+          "data-squircle-border-width",
+          "data-squircle-border-color",
+          "data-squircle-border-style"
+        ]
+      });
+    }
+    return els.length;
+  }
+  /** Merge new options into already-applied elements. */
+  update(target, config = {}) {
+    for (const el of toElements(target)) {
+      const st = this._registry.get(el);
+      if (!st) continue;
+      st.config = mergeConfig(st.config, config);
+      if ("radius" in config) st.cssRadii = null;
+      this._syncBorder(el, st);
+      this._render(el, st);
+    }
+    return this;
+  }
+  /** Remove the effect and restore the element's original inline styles. */
+  remove(target) {
+    for (const el of toElements(target)) {
+      const st = this._registry.get(el);
+      if (!st) continue;
+      this._ro && this._ro.unobserve(el);
+      for (const [k, v] of Object.entries(st.saved)) el.style.setProperty(k, v.value, v.priority);
+      if (st.overlay) st.overlay.remove();
+      el.removeAttribute("data-squircle-applied");
+      this._registry.delete(el);
+      this._tracked.delete(el);
+    }
+    return this;
+  }
+  /** Debug info: resolved config, size, effective per-corner radius/smoothing. */
+  inspect(el) {
+    const st = this._registry.get(el);
+    if (!st) return null;
+    const { w, h } = st;
+    const radii = this._resolveRadii(el, st, w, h);
+    const corners = computeCorners(0, 0, w, h, st.smoothing, radii).map((c, i) => ({
+      corner: ["top-left", "top-right", "bottom-right", "bottom-left"][i],
+      radius: c.radius,
+      smoothingIn: c.s1,
+      smoothingOut: c.s2
+    }));
+    return {
+      config: { ...st.config },
+      smoothing: st.smoothing,
+      size: { width: w, height: h },
+      radii: constrainRadii(w, h, normalizeRadii(radii)),
+      corners,
+      path: st.path,
+      mode: this._supported ? "clip-path" : "border-radius-fallback"
+    };
+  }
+  has(el) {
+    return this._registry.has(el);
+  }
+  /** Detach everything and disconnect observers. */
+  destroy() {
+    for (const el of Array.from(this._tracked)) this.remove(el);
+    this._ro && this._ro.disconnect();
+    this._mo && this._mo.disconnect();
+    this._mo = null;
+  }
+  // -------------------------------------------------------------------------
+  _attach(el, config, fromData = false) {
+    const existing = this._registry.get(el);
+    const dataCfg = readDataConfig(el);
+    if (existing) {
+      existing.config = fromData ? mergeConfig(existing.config, dataCfg) : mergeConfig(existing.config, config);
+      existing.cssRadii = null;
+      this._syncBorder(el, existing);
+      this._render(el, existing);
+      return;
+    }
+    const st = {
+      id: ++uid,
+      config: mergeConfig(mergeConfig(this.defaults, dataCfg), config),
+      saved: {},
+      overlay: null,
+      cssRadii: null,
+      path: "",
+      w: el.offsetWidth,
+      h: el.offsetHeight,
+      smoothing: 0
+    };
+    this._registry.set(el, st);
+    this._tracked.add(el);
+    el.setAttribute("data-squircle-applied", "");
+    this._syncBorder(el, st);
+    this._render(el, st);
+    this._ro && this._ro.observe(el, { box: "border-box" });
+  }
+  _save(el, st, prop) {
+    if (prop in st.saved) return;
+    st.saved[prop] = { value: el.style.getPropertyValue(prop), priority: el.style.getPropertyPriority(prop) };
+  }
+  _resolveRadii(el, st, w, h) {
+    const r = st.config.radius;
+    if (r !== "css") return r;
+    if (!st.cssRadii) {
+      const prev = el.style.getPropertyValue("border-radius");
+      if ("border-radius" in st.saved) el.style.setProperty("border-radius", st.saved["border-radius"].value);
+      st.cssRadii = readCssRadii(el, w, h);
+      if ("border-radius" in st.saved) el.style.setProperty("border-radius", prev);
+    }
+    return st.cssRadii;
+  }
+  _render(el, st, w = el.offsetWidth, h = el.offsetHeight) {
+    st.w = w;
+    st.h = h;
+    st.smoothing = parseSmoothing(st.config.smoothing) ?? 0;
+    const radii = this._resolveRadii(el, st, w, h);
+    if (!this._supported) {
+      const { tl, tr, br, bl } = normalizeRadii(radii);
+      this._save(el, st, "border-radius");
+      el.style.borderRadius = `${tl}px ${tr}px ${br}px ${bl}px`;
+      return;
+    }
+    if (!(w > 0) || !(h > 0)) return;
+    const prec = st.config.precision;
+    st.path = smoothRoundRectPath(0, 0, w, h, st.smoothing, radii, { precision: prec });
+    this._save(el, st, "clip-path");
+    this._save(el, st, "-webkit-clip-path");
+    this._save(el, st, "border-radius");
+    const cp = `path('${st.path}')`;
+    el.style.setProperty("clip-path", cp);
+    el.style.setProperty("-webkit-clip-path", cp);
+    el.style.setProperty("border-radius", "0");
+    if (st.overlay) this._renderBorder(st, w, h, radii);
+  }
+  _syncBorder(el, st) {
+    const b = normalizeBorder(st.config.border);
+    if (!b) {
+      if (st.overlay) st.overlay.remove();
+      st.overlay = null;
+      return;
+    }
+    if (!this._supported) {
+      this._save(el, st, "border");
+      el.style.border = `${b.width}px ${b.style} ${b.color}`;
+      return;
+    }
+    if (!st.overlay) {
+      if (VOID_ELEMENTS.has(el.tagName)) {
+        if (typeof console !== "undefined") console.warn("[smooth-corners] border overlay needs a container element, got <" + el.tagName.toLowerCase() + ">");
+        return;
+      }
+      if (getComputedStyle(el).position === "static") {
+        this._save(el, st, "position");
+        el.style.position = "relative";
+      }
+      const svg = document.createElementNS(SVG_NS, "svg");
+      svg.setAttribute(OVERLAY_ATTR, "");
+      svg.setAttribute("aria-hidden", "true");
+      svg.setAttribute("focusable", "false");
+      svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:var(--squircle-border-z,auto)";
+      const defs2 = document.createElementNS(SVG_NS, "defs");
+      const path2 = document.createElementNS(SVG_NS, "path");
+      path2.setAttribute("fill", "none");
+      path2.setAttribute("vector-effect", "non-scaling-stroke");
+      svg.append(defs2, path2);
+      el.prepend(svg);
+      st.overlay = svg;
+    }
+    st.border = b;
+    const [defs, path] = st.overlay.children;
+    defs.textContent = "";
+    if (b.gradient && b.gradient.length) {
+      const gid = `sq-grad-${st.id}`;
+      const g = document.createElementNS(SVG_NS, "linearGradient");
+      g.id = gid;
+      const a = ((b.angle ?? 135) - 90) * (Math.PI / 180);
+      g.setAttribute("x1", String(0.5 - Math.cos(a) / 2));
+      g.setAttribute("y1", String(0.5 - Math.sin(a) / 2));
+      g.setAttribute("x2", String(0.5 + Math.cos(a) / 2));
+      g.setAttribute("y2", String(0.5 + Math.sin(a) / 2));
+      for (const stop of b.gradient) {
+        const s = document.createElementNS(SVG_NS, "stop");
+        s.setAttribute("offset", String(stop.offset));
+        s.setAttribute("stop-color", stop.color);
+        g.append(s);
+      }
+      defs.append(g);
+      path.setAttribute("stroke", `url(#${gid})`);
+    } else {
+      path.setAttribute("stroke", b.color);
+    }
+    path.setAttribute("stroke-width", String(b.width * (b.followSurface ? 2 : 1)));
+    path.setAttribute("stroke-linecap", b.style === "dotted" ? "round" : "butt");
+    const dash = b.style === "dashed" ? `${b.width * 3} ${b.width * 2}` : b.style === "dotted" ? `0 ${b.width * 2}` : "";
+    if (dash) path.setAttribute("stroke-dasharray", dash);
+    else path.removeAttribute("stroke-dasharray");
+  }
+  _renderBorder(st, w, h, radii) {
+    const el = st.overlay.parentElement;
+    const cs = getComputedStyle(el);
+    const bl = parseFloat(cs.borderLeftWidth) || 0;
+    const bt = parseFloat(cs.borderTopWidth) || 0;
+    st.overlay.style.left = `${-bl}px`;
+    st.overlay.style.top = `${-bt}px`;
+    st.overlay.style.width = `${w}px`;
+    st.overlay.style.height = `${h}px`;
+    st.overlay.setAttribute("viewBox", `0 0 ${w} ${h}`);
+    if (st.border.followSurface) {
+      st.overlay.lastElementChild.setAttribute("d", st.path);
+      return;
+    }
+    const bw = st.border.width;
+    const half = bw / 2;
+    const r = normalizeRadii(radii);
+    const inset = { tl: Math.max(0, r.tl - half), tr: Math.max(0, r.tr - half), br: Math.max(0, r.br - half), bl: Math.max(0, r.bl - half) };
+    const d = smoothRoundRectPath(half, half, w - bw, h - bw, st.smoothing, inset, { precision: st.config.precision });
+    st.overlay.lastElementChild.setAttribute("d", d);
+  }
+};
+var VOID_ELEMENTS = /* @__PURE__ */ new Set(["IMG", "INPUT", "VIDEO", "CANVAS", "IFRAME", "TEXTAREA", "SELECT", "HR", "BR", "EMBED", "OBJECT"]);
+function normalizeBorder(b) {
+  if (!b) return null;
+  if (typeof b === "number") b = { width: b };
+  if (!(b.width > 0)) return null;
+  return {
+    width: b.width,
+    followSurface: b.followSurface === true,
+    color: b.color || "var(--squircle-border-color, currentColor)",
+    style: b.style === "dashed" || b.style === "dotted" ? b.style : "solid",
+    gradient: b.gradient,
+    angle: b.angle
+  };
+}
+function mergeConfig(base, over) {
+  const out = { ...base };
+  for (const [k, v] of Object.entries(over || {})) {
+    if (v === void 0) continue;
+    out[k] = k === "radius" ? parseRadius(v) : v;
+  }
+  return out;
+}
+var shared = null;
+function getSharedInstance() {
+  if (!shared) shared = new SmoothCorners();
+  return shared;
+}
+
+// src/react.js
+var useIsoLayoutEffect = typeof window !== "undefined" ? import_react.useLayoutEffect : import_react.useEffect;
+var keyOf = (v) => v == null ? "" : typeof v === "object" ? JSON.stringify(v) : String(v);
+function useSquircle(config = {}) {
+  const elRef = (0, import_react.useRef)(null);
+  const cfgRef = (0, import_react.useRef)(config);
+  cfgRef.current = config;
+  const key = keyOf(config.radius) + "|" + keyOf(config.smoothing) + "|" + keyOf(config.border) + "|" + keyOf(config.precision);
+  const ref = (0, import_react.useCallback)((node) => {
+    const kit = getSharedInstance();
+    if (elRef.current && elRef.current !== node) kit.remove(elRef.current);
+    elRef.current = node;
+    if (node) kit.apply(node, withNulls(cfgRef.current));
+  }, []);
+  useIsoLayoutEffect(() => {
+    if (elRef.current) getSharedInstance().update(elRef.current, withNulls(cfgRef.current));
+  }, [key]);
+  (0, import_react.useEffect)(() => () => {
+    if (elRef.current) getSharedInstance().remove(elRef.current);
+  }, []);
+  return ref;
+}
+function withNulls(c) {
+  return { ...c, border: c.border ?? null };
+}
+function assignRef(ref, value) {
+  if (typeof ref === "function") ref(value);
+  else if (ref) ref.current = value;
+}
+var Squircle = (0, import_react.forwardRef)(function Squircle2({ as = "div", radius, smoothing, border, precision, children, ...rest }, forwarded) {
+  const sqRef = useSquircle({ radius, smoothing, border, precision });
+  const ref = (0, import_react.useCallback)(
+    (node) => {
+      sqRef(node);
+      assignRef(forwarded, node);
+    },
+    [sqRef, forwarded]
+  );
+  return (0, import_react.createElement)(as, { ...rest, ref, "data-squircle-react": "" }, children);
+});
+var react_default = Squircle;

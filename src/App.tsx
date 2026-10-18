@@ -54,7 +54,7 @@ function App() {
             </nav>
             <Button className="desktop-appearance" aria-label={appearance === 'light' ? '切换到深色外观' : '切换到浅色外观'} title={appearance === 'light' ? '切换到深色外观' : '切换到浅色外观'} onClick={() => setAppearance((value) => value === 'light' ? 'dark' : 'light')}><SfSymbol name={appearance === 'light' ? 'moon' : 'sun.max'} size={15} /></Button>
           </header>
-          {route.mode === 'mail' && <div className={`${mac.windowShadowHost} mail-window-host`}><MailScene onAction={setNotice} /></div>}
+          {route.mode === 'mail' && <div className={`${mac.windowShadowHost} mail-window-host`}><MailScene onAction={setNotice} appearance={appearance} /></div>}
           {route.mode === 'settings' && <div className={`${mac.windowShadowHost} settings-window-host`}><SettingsScene onAction={setNotice} /></div>}
         </div>
       )}

@@ -1,0 +1,49 @@
+{
+  "name": "smooth-corners",
+  "version": "0.1.0",
+  "description": "Squircle / continuous corners for the web, using the exact geometry of Electron's -electron-corner-smoothing (electron_smooth_round_rect.cc). cornerKit-style API, Vanilla JS core + React bindings.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./src/index.d.ts",
+  "unpkg": "./dist/smooth-corners.iife.js",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./react": {
+      "types": "./src/react.d.ts",
+      "import": "./dist/react.js",
+      "require": "./dist/react.cjs"
+    },
+    "./path": {
+      "import": "./dist/path.js",
+      "require": "./dist/path.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "sideEffects": false,
+  "peerDependencies": {
+    "react": ">=17"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "keywords": [
+    "squircle",
+    "smooth corners",
+    "corner smoothing",
+    "electron",
+    "figma",
+    "clip-path",
+    "react"
+  ],
+  "license": "MIT"
+}

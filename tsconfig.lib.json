@@ -7,10 +7,11 @@
     "jsx": "react-jsx",
     "strict": true,
     "skipLibCheck": true,
+    "types": ["vite/client"],
     "declaration": true,
     "emitDeclarationOnly": true,
     "outDir": "dist-theme",
-    "rootDir": "src/theme"
+    "rootDir": "src"
   },
-  "include": ["src/theme"]
+  "include": ["src/theme", "src/liquid-glass"]
 }

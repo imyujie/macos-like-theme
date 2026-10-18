@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Button } from '@base-ui/react/button';
-import { Input } from '@base-ui/react/input';
+import { Autocomplete } from '@base-ui/react/autocomplete';
 import { Switch } from '@base-ui/react/switch';
-import { mac, SfSymbol } from './theme';
+import { Tabs } from '@base-ui/react/tabs';
+import { LiquidGlassButton, mac, SfSymbol, type GlassMaterialMode } from './theme';
 import './scenes.css';
 
 type SceneProps = { onAction: (message: string) => void };
@@ -31,7 +32,7 @@ const messages: MailMessage[] = [
   { sender: 'Eco Lodge', subject: 'Confirmed: Your suite in Brooklyn awaits!', preview: "Hello Liz, We’re thrilled to welcome you to our Brooklyn hotel this spring.", date: '1/20/26', categories: ['shopping'], body: ['Hello Liz,', 'We’re thrilled to welcome you to our Brooklyn hotel this spring. Your suite is reserved and we look forward to seeing you.', 'Your confirmation details are attached.'] },
 ];
 
-export function MailScene({ onAction }: SceneProps) {
+export function MailScene({ onAction, appearance }: SceneProps & { appearance: GlassMaterialMode }) {
   const [mailbox, setMailbox] = useState('all');
   const [selected, setSelected] = useState(3);
   const [query, setQuery] = useState('New York trip');
@@ -40,6 +41,12 @@ export function MailScene({ onAction }: SceneProps) {
   const current = messages[selected];
   const visibleMessages = messages.map((message, index) => ({ message, index })).filter(({ message }) => filter === 'all' || message.categories.includes(filter));
   const currentMailbox = mailboxes.find((item) => item.id === mailbox)?.label ?? '所有邮箱';
+  const searchSuggestions = [
+    { symbol: 'magnifyingglass', label: `${query || '搜索'} today`, query },
+    { symbol: 'person.crop.circle', label: `发件人包含：${query || '关键词'}`, query },
+    { symbol: 'envelope', label: `主题包含：${query || '关键词'}`, query },
+    { symbol: 'paperclip', label: `附件名称包含：${query || '关键词'}`, query },
+  ];
   const chooseFilter = (nextFilter: string) => {
     setFilter(nextFilter);
     if (nextFilter !== 'all' && !current.categories.includes(nextFilter)) {
@@ -52,7 +59,7 @@ export function MailScene({ onAction }: SceneProps) {
   return (
     <main className={`reference-window ${mac.window} mail-scene`} aria-label="邮件场景预览">
       <aside className={`mail-sidebar ${mac.sidebarSurface}`}>
-        <div className="mail-sidebar-top"><TrafficLights /><SceneIconButton name="sidebar.left" label="侧边栏布局" onClick={() => onAction('邮件侧边栏预览')} /></div>
+        <div className="mail-sidebar-top"><TrafficLights /><LiquidGlassButton variant="icon" size={38} appearance={appearance} icon="sidebar.left" ariaLabel="侧边栏布局" onClick={() => onAction('邮件侧边栏预览')} /></div>
         <div className="mail-sidebar-section">搜索</div>
         <nav aria-label="邮箱目录" className="mail-sidebar-nav">
           {mailboxes.map((item, index) => (
@@ -72,36 +79,42 @@ export function MailScene({ onAction }: SceneProps) {
         <header className={`mail-toolbar ${mac.toolbarSurface}`}>
           <div className="mail-heading"><strong>搜索</strong><small>{currentMailbox}，{visibleMessages.length} 个结果</small></div>
           <div className="mail-toolbar-actions">
-            <div className="scene-icon-group"><SceneIconButton name="line.3.horizontal.decrease" label="筛选" onClick={() => chooseFilter(filter === 'all' ? 'people' : 'all')} /><SceneIconButton name="ellipsis" label="更多操作" onClick={() => onAction('已打开邮件操作')} /></div>
-            <SceneIconButton name="square.and.pencil" label="撰写邮件" onClick={() => onAction('新邮件示例')} />
-            <div className="scene-icon-group compact"><SceneIconButton name="arrowshape.turn.up.left" label="回复" onClick={() => onAction('回复邮件示例')} /><SceneIconButton name="arrowshape.turn.up.right" label="转发" onClick={() => onAction('转发邮件示例')} /></div>
-            <div className="scene-icon-group compact"><SceneIconButton name="archivebox" label="归档" onClick={() => onAction('归档邮件示例')} /><SceneIconButton name="trash" label="删除" onClick={() => onAction('删除邮件示例')} /></div>
+            <div className="mail-toolbar-group"><LiquidGlassButton variant="icon" size={38} appearance={appearance} icon="line.3.horizontal.decrease" ariaLabel="筛选" selected={filter !== 'all'} onClick={() => chooseFilter(filter === 'all' ? 'people' : 'all')} /><LiquidGlassButton variant="icon" size={38} appearance={appearance} icon="ellipsis" ariaLabel="更多操作" onClick={() => onAction('已打开邮件操作')} /></div>
+            <LiquidGlassButton variant="icon" size={38} appearance={appearance} icon="square.and.pencil" ariaLabel="撰写邮件" onClick={() => onAction('新邮件示例')} />
+            <div className="mail-toolbar-group compact"><LiquidGlassButton variant="icon" size={38} appearance={appearance} icon="arrowshape.turn.up.left" ariaLabel="回复" onClick={() => onAction('回复邮件示例')} /><LiquidGlassButton variant="icon" size={38} appearance={appearance} icon="arrowshape.turn.up.right" ariaLabel="转发" onClick={() => onAction('转发邮件示例')} /></div>
+            <div className="mail-toolbar-group compact"><LiquidGlassButton variant="icon" size={38} appearance={appearance} icon="archivebox" ariaLabel="归档" onClick={() => onAction('归档邮件示例')} /><LiquidGlassButton variant="icon" size={38} appearance={appearance} icon="trash" ariaLabel="删除" onClick={() => onAction('删除邮件示例')} /></div>
           </div>
           <div className="mail-search-area">
-            <label className={`mail-search-field ${suggestionsOpen ? 'is-open' : ''}`}>
-              <SfSymbol name="magnifyingglass" size={16} />
-              <Input aria-label="搜索邮件" value={query} onChange={(event) => { setQuery(event.target.value); setSuggestionsOpen(true); }} onFocus={() => setSuggestionsOpen(true)} onKeyDown={(event) => { if (event.key === 'Escape') setSuggestionsOpen(false); }} />
-              {query && <Button className="mail-search-clear" aria-label="清除搜索" onClick={() => { setQuery(''); setSuggestionsOpen(false); }}><SfSymbol name="xmark" size={12} /></Button>}
-            </label>
-            {suggestionsOpen && <div className="mail-search-suggestions-host"><div className="mail-search-suggestions" role="group" aria-label="搜索建议">
-              {[
-                { symbol: 'magnifyingglass', label: `${query || '搜索'} today` },
-                { symbol: 'person.crop.circle', label: `发件人包含：${query || '关键词'}` },
-                { symbol: 'envelope', label: `主题包含：${query || '关键词'}` },
-                { symbol: 'paperclip', label: `附件名称包含：${query || '关键词'}` },
-              ].map((item) => <Button key={item.symbol} className="mail-suggestion" onClick={() => setSuggestionsOpen(false)}><SfSymbol name={item.symbol} size={15} /><span>{item.label}</span></Button>)}
-            </div></div>}
+            <Autocomplete.Root items={searchSuggestions} mode="none" value={query} onValueChange={setQuery} itemToStringValue={(item) => item.query} open={suggestionsOpen} onOpenChange={setSuggestionsOpen} openOnInputClick>
+              <Autocomplete.InputGroup className={`${mac.inputFrame} mail-search-field`} data-shape="capsule">
+                <span className={mac.inputSurface} aria-hidden="true" /><span className={mac.inputBorder} aria-hidden="true" />
+                <SfSymbol name="magnifyingglass" size={16} />
+                <Autocomplete.Input className={mac.input} aria-label="搜索邮件" onFocus={() => setSuggestionsOpen(true)} />
+                <Autocomplete.Clear className="mail-search-clear" aria-label="清除搜索" onClick={() => setSuggestionsOpen(false)}><SfSymbol name="xmark" size={12} /></Autocomplete.Clear>
+              </Autocomplete.InputGroup>
+              <Autocomplete.Portal><Autocomplete.Positioner className={mac.menu.positioner} sideOffset={7} align="end" collisionPadding={12}>
+                <Autocomplete.Popup className={`${mac.menu.popup} mail-search-suggestions`}>
+                  <span className={mac.menu.backdrop} aria-hidden="true" /><span className={mac.menu.border} aria-hidden="true" />
+                  <Autocomplete.List aria-label="搜索建议">
+                    {(item: (typeof searchSuggestions)[number]) => <Autocomplete.Item key={item.symbol} value={item} className={`${mac.menu.item} mail-suggestion`}><SfSymbol name={item.symbol} size={15} /><span>{item.label}</span></Autocomplete.Item>}
+                  </Autocomplete.List>
+                </Autocomplete.Popup>
+              </Autocomplete.Positioner></Autocomplete.Portal>
+            </Autocomplete.Root>
           </div>
         </header>
 
         <div className="mail-content">
-          <section className="mail-list-panel" aria-label="邮件列表">
+          <Tabs.Root className="mail-list-panel" render={<section aria-label="邮件列表" />} value={filter} onValueChange={(value) => chooseFilter(String(value))}>
             <div className="mail-filter-row">
+              <Tabs.List className={`${mac.tabs.list} mail-filter-tabs`} aria-label="邮件分类">
+                <span className={mac.tabs.surface} aria-hidden="true" />
               {[
-                ['people', 'person.crop.circle'], ['shopping', 'tray'], ['messages', 'bubble.left'], ['news', 'megaphone'], ['all', 'tray.full'],
-              ].map(([id, symbol]) => <Button key={id} className="mail-filter-chip" data-active={filter === id || undefined} aria-label={id === 'all' ? '所有邮件' : `筛选 ${id}`} onClick={() => chooseFilter(id)}><SfSymbol name={symbol} size={16} />{id === 'all' && <span>所有邮件</span>}</Button>)}
+                ['people', 'person.crop.circle', '联系人'], ['shopping', 'tray', '购物'], ['messages', 'bubble.left', '消息'], ['news', 'megaphone', '资讯'], ['all', 'tray.full', '所有邮件'],
+              ].map(([id, symbol, label]) => <Tabs.Tab key={id} className={`${mac.tabs.tab} mail-filter-tab`} value={id} data-mail-filter={id} aria-label={id === 'all' ? '所有邮件' : `筛选 ${id}`} title={label}><SfSymbol name={symbol} size={16} />{id === 'all' && <span>所有邮件</span>}</Tabs.Tab>)}
+              </Tabs.List>
             </div>
-            <div className="mail-list-scroll">
+            <Tabs.Panel className={`${mac.tabs.panel} mail-list-scroll`} value={filter}>
               <div className="mail-list-label">最佳匹配</div>
               {visibleMessages.map(({ message, index }) => <div key={message.sender}>
                 {index === 4 && <div className="mail-list-label results">全部结果</div>}
@@ -111,8 +124,8 @@ export function MailScene({ onAction }: SceneProps) {
                   <span className="mail-message-preview">{message.preview}</span>
                 </Button>
               </div>)}
-            </div>
-          </section>
+            </Tabs.Panel>
+          </Tabs.Root>
 
           <article className="mail-detail-panel">
             <div className="mail-detail-count">1 封邮件</div>

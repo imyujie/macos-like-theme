@@ -61,8 +61,8 @@
 .docs-nav-group nav { display: grid; gap: 2px; }
 .docs-component-link { display: flex; align-items: center; gap: 9px; min-height: 34px; padding: 0 10px; border-radius: 8px; color: var(--mac-text-secondary) !important; }
 .docs-component-link .sf-symbol { color: var(--mac-text-tertiary); }
-.docs-component-link span:not(.sf-symbol) { font-weight: 550; }
-.docs-component-link small { margin-left: auto; color: var(--mac-text-tertiary); font-size: 10px; }
+.docs-component-link span:not(.sf-symbol) { min-width: 0; font-weight: 550; }
+.docs-component-link small { flex: none; margin-left: auto; color: var(--mac-text-tertiary); font-size: 10px; white-space: nowrap; }
 .docs-component-link:hover { background: var(--docs-muted-surface); color: var(--mac-text) !important; }
 .docs-component-link[data-active] { background: var(--docs-accent-soft); color: var(--mac-accent) !important; }
 .docs-component-link[data-active] .sf-symbol, .docs-component-link[data-active] small { color: var(--mac-accent); }
@@ -81,6 +81,7 @@
 .docs-source-link { display: inline-flex; align-items: center; flex: none; gap: 7px; padding: 8px 0; color: var(--mac-accent) !important; font-size: 11px; font-weight: 680; }
 .docs-source-link:hover { text-decoration: underline; }
 .docs-workbench { display: grid; grid-template-columns: minmax(0, 1.43fr) minmax(265px, .77fr); align-items: stretch; gap: 16px; }
+.docs-inspector-column { display: contents; }
 .docs-panel { min-width: 0; border: 1px solid var(--docs-line); border-radius: 13px; background: var(--docs-surface); }
 .docs-preview-panel, .docs-inspector { padding: 19px; }
 .docs-panel-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; min-height: 49px; }
@@ -99,7 +100,81 @@
 .docs-state-line code { overflow: auto; color: var(--mac-text-secondary); font: 10px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
 .docs-input-demo { display: grid; gap: 9px; width: min(100%, 260px); font-weight: 580; }
 .docs-input-demo .mac-input-frame { height: 34px; }
+.docs-preview-panel:has(.docs-glass-search-demo) .docs-preview-surface { padding: 0; overflow: hidden; }
+.docs-glass-search-demo { position: relative; width: 100%; min-height: 265px; background: color-mix(in srgb, var(--mac-group) 65%, var(--mac-window)); }
+.docs-glass-search-background { padding: 18px 24px; }
+.docs-glass-search-background-row { display: flex; align-items: center; gap: 12px; min-height: 76px; border-bottom: 1px solid var(--docs-line); color: var(--mac-text-secondary); }
+.docs-glass-search-background-row > span:nth-child(2) { display: grid; gap: 4px; }
+.docs-glass-search-background-row strong { color: var(--mac-text); font-size: 14px; font-weight: 600; }
+.docs-glass-search-background-row small, .docs-glass-search-background-row time { color: var(--mac-text-tertiary); font-size: 11px; }
+.docs-glass-search-background-row time { margin-left: auto; }
+.docs-glass-search-background-icon { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 10px; background: var(--docs-accent-soft); color: var(--mac-accent); }
+.docs-glass-search-field { position: absolute; z-index: 1; top: 42px; right: 20px; left: 20px; }
+.docs-glass-tabs-demo { display: grid; justify-items: center; gap: 22px; width: 100%; min-width: 0; }
+.docs-glass-tabs-panel { color: var(--mac-text-secondary); font-size: 12px; outline: none; }
 .docs-popover-demo { display: grid; place-items: center; min-height: 126px; }
+.docs-floating-panel-demo { width: min(100%, 250px); }
+.docs-floating-panel-body { display: grid; gap: 8px; padding: 18px; }
+.docs-floating-panel-body > .sf-symbol { margin-bottom: 4px; color: var(--mac-text-secondary); }
+.docs-floating-panel-body > strong { font-size: 14px; }
+.docs-floating-panel-body > p { color: var(--mac-text-secondary); font-size: 12px; line-height: 1.6; }
+/* Keep the background comparisons under the same live controls. Text and
+   patterns beneath each button make blur and edge refraction easy to compare. */
+.docs-preview-panel:has(.docs-glass-stage) .docs-preview-surface { padding: 12px; background: var(--docs-muted-surface); }
+.docs-glass-backgrounds { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 14px 12px; width: 100%; }
+.docs-glass-background { min-width: 0; }
+.docs-glass-background h3 { margin: 0 0 7px; color: var(--mac-text-secondary); font-size: 11px; font-weight: 600; }
+.docs-glass-stage {
+  --stage-text: #535963;
+  --stage-heading: #252930;
+  position: relative;
+  display: grid;
+  align-content: center;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 200px;
+  border-radius: 9px;
+  background: #f3f4f6;
+  overflow: hidden;
+}
+.docs-glass-stage[data-background="dark"] { --stage-text: #b7bec9; --stage-heading: #f1f3f7; background: #252b36; }
+.docs-glass-stage[data-background="gradient"] { --stage-text: #294d53; --stage-heading: #16383e; background: linear-gradient(135deg, #a8d8eb 0%, #b5d9d0 40%, #efd09b 72%, #e59c7b 100%); }
+.docs-glass-stage[data-background="pattern"] { --stage-text: #344959; --stage-heading: #192e3e; background: repeating-conic-gradient(#d9e4eb 0% 25%, #7e9bae 0% 50%) 0 0 / 48px 48px; }
+.docs-glass-stage-text {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  align-content: center;
+  gap: 6px;
+  padding: 16px;
+  color: var(--stage-text);
+  font-size: 11px;
+  line-height: 20px;
+  pointer-events: none;
+  user-select: none;
+}
+.docs-glass-stage-text strong { color: var(--stage-heading); font-size: 12px; font-weight: 650; }
+.docs-glass-stage-text p { margin: 0; }
+.docs-glass-stage-toolbar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  width: fit-content;
+  min-height: 46px;
+  padding: 8px 18px;
+  /* No material of its own: the buttons sample the wallpaper directly, and the
+     row no longer stacks a second backdrop-filter under the glass. */
+  background: transparent;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.docs-glass-stage-toolbar[data-dragging] { cursor: grabbing; }
+.docs-glass-stage-actions { display: flex; align-items: center; gap: 9px; }
 .docs-popover-file {
   position: relative;
   display: grid;
@@ -151,6 +226,7 @@
 .docs-choice-button[data-active] { border-color: var(--mac-accent); background: var(--docs-accent-soft); color: var(--mac-accent); }
 .docs-control-input { display: grid; gap: 7px; }
 .docs-control-input .mac-input-frame { height: 31px; }
+.docs-material-trigger { width: 100%; min-height: 31px; padding: 0 9px; justify-content: space-between; font-size: 12px; }
 .docs-control-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 30px; }
 .docs-control-row > span { display: grid; gap: 2px; }
 .docs-control-row strong { font-size: 11px; font-weight: 650; }
@@ -178,14 +254,111 @@
 .docs-props-table code { overflow-wrap: anywhere; color: inherit; font: 10px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .docs-props-table td:first-child code { color: var(--mac-accent); font-weight: 650; }
 .docs-anatomy-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+
+/* Liquid Glass parameter panel: every engine / material / pointer knob. */
+.docs-param-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: start; }
+.docs-param-group { padding: 15px 16px 16px; }
+.docs-param-group > header { display: flex; align-items: center; gap: 9px; margin-bottom: 9px; }
+.docs-param-group > header h3 { flex: none; font-size: 12px; font-weight: 720; }
+.docs-param-group > header span { margin-left: auto; color: var(--mac-text-tertiary); font-size: 10px; white-space: nowrap; }
+.docs-param-group > header .docs-choice-button { flex: none; min-height: 24px; padding: 0 8px; }
+.docs-param-note { margin-bottom: 11px; color: var(--mac-text-tertiary); font-size: 10px; line-height: 1.55; }
+.docs-param-list { display: grid; gap: 4px; }
+.docs-param-row { display: grid; grid-template-columns: minmax(0, 1fr) 84px 62px 20px; align-items: center; gap: 9px; min-height: 30px; padding: 1px 0; }
+.docs-param-row[data-overridden] .docs-param-name code { color: var(--mac-accent); font-weight: 650; }
+.docs-param-row[data-overridden] .docs-param-name::before { background: var(--mac-accent); }
+.docs-param-name { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
+.docs-param-name::before { flex: none; width: 4px; height: 4px; border-radius: 50%; background: var(--docs-line); content: ''; align-self: center; }
+.docs-param-name code { flex: none; color: var(--mac-text); font: 11px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.docs-param-name small { overflow: hidden; color: var(--mac-text-tertiary); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.docs-param-row input[type="range"] { width: 100%; height: 18px; margin: 0; accent-color: var(--mac-accent); }
+.docs-param-number { width: 100%; height: 24px; padding: 0 6px; border: 1px solid var(--docs-line); border-radius: 6px; background: var(--docs-muted-surface); color: var(--mac-text); font: 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; text-align: right; }
+.docs-param-hex { text-align: left; }
+.docs-param-color { width: 100%; height: 24px; padding: 1px; border: 1px solid var(--docs-line); border-radius: 6px; background: var(--docs-muted-surface); cursor: pointer; }
+.docs-param-select { grid-column: 2 / -1; height: 24px; padding: 0 6px; border: 1px solid var(--docs-line); border-radius: 6px; background: var(--docs-muted-surface); color: var(--mac-text); font: inherit; font-size: 11px; }
+.docs-param-check { grid-column: 2 / -1; justify-self: start; width: 15px; height: 15px; margin: 0; accent-color: var(--mac-accent); }
+.docs-param-readout { grid-column: 2 / -1; justify-self: start; padding: 3px 7px; border-radius: 5px; background: var(--docs-muted-surface); color: var(--mac-text-secondary); font: 10px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.docs-param-reset { display: grid; place-items: center; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 5px; background: transparent; color: var(--mac-text-tertiary); cursor: pointer; }
+.docs-param-reset:hover:not(:disabled) { background: var(--docs-muted-surface); color: var(--mac-text); }
+.docs-param-reset:disabled { opacity: .3; cursor: default; }
+.docs-param-footnote { margin-top: 12px; color: var(--mac-text-tertiary); font-size: 10px; line-height: 1.6; }
+.docs-param-footnote code { font: 10px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.docs-params .docs-control-row { min-height: 30px; }
 .docs-anatomy-grid .docs-panel { padding: 16px; }
 .docs-anatomy-grid h3 { margin-bottom: 12px; font-size: 11px; font-weight: 700; }
 .docs-token-list { display: flex; flex-wrap: wrap; gap: 6px; }
 .docs-token-list code { padding: 5px 7px; border-radius: 5px; background: var(--docs-code); color: var(--mac-text-secondary); font: 10px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .docs-footer { display: flex; justify-content: space-between; gap: 10px; margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--docs-line); color: var(--mac-text-tertiary); font-size: 10px; }
 
+/* The glass workbench owns the viewport. Only the settings column scrolls,
+   so a wheel gesture or keyboard navigation cannot carry the previews away. */
+.docs-site--glass { display: flex; flex-direction: column; height: 100dvh; min-height: 0; overflow: hidden; }
+.docs-site--glass .docs-site-header { flex: none; }
+.docs-site--glass .docs-layout { flex: 1; min-height: 0; grid-template-columns: 210px minmax(0, 1fr); }
+.docs-site--glass .docs-sidebar { min-height: 0; overflow: hidden; }
+.docs-site--glass .docs-sidebar-inner { position: static; min-height: 0; max-height: 100%; height: 100%; overflow-y: auto; }
+.docs-site--glass .docs-main { display: flex; flex-direction: column; width: 100%; min-height: 0; padding: 18px 20px 20px; overflow: hidden; }
+.docs-site--glass .docs-hero { flex: none; align-items: center; margin: 12px 0 18px; }
+.docs-site--glass .docs-eyebrow { display: none; }
+.docs-site--glass .docs-hero h1 { font-size: 26px; }
+.docs-site--glass .docs-hero p { max-width: 780px; margin-top: 7px; font-size: 11px; line-height: 1.6; }
+.docs-site--glass .docs-source-link { font-size: 10px; }
+.docs-site--glass .docs-workbench--glass { flex: 1; min-height: 0; grid-template-columns: minmax(0, 1fr) minmax(310px, 360px); }
+.docs-workbench--glass > .docs-preview-panel { display: flex; flex-direction: column; min-height: 0; }
+.docs-workbench--glass .docs-preview-surface { flex: 1; min-height: 0; margin-top: 12px; }
+.docs-workbench--glass .docs-preview-content { height: 100%; min-height: 0; }
+.docs-workbench--glass .docs-glass-backgrounds { height: 100%; min-height: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); }
+.docs-workbench--glass .docs-glass-background { display: flex; flex-direction: column; min-height: 0; }
+.docs-workbench--glass .docs-glass-stage { flex: 1; min-height: 0; }
+.docs-workbench--glass .docs-panel-heading, .docs-workbench--glass .docs-state-line { flex: none; }
+.docs-glass-inspector-scroll { min-width: 0; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior-y: contain; scrollbar-gutter: stable; scrollbar-width: thin; scrollbar-color: var(--mac-text-tertiary) transparent; padding: 0 5px 6px 2px; }
+.docs-glass-inspector-scroll:focus-visible { outline: 2px solid var(--mac-focus); outline-offset: -2px; border-radius: 13px; }
+.docs-glass-inspector-scroll .docs-inspector-body, .docs-glass-inspector-scroll .docs-param-groups { grid-template-columns: minmax(0, 1fr); }
+.docs-glass-inspector-scroll .docs-params { margin-top: 22px; }
+.docs-glass-inspector-scroll .docs-section-heading { display: block; margin-bottom: 12px; }
+.docs-glass-inspector-scroll .docs-section-heading h2 { font-size: 14px; }
+.docs-glass-inspector-scroll .docs-section-heading > span { display: block; margin-top: 6px; }
+.docs-glass-inspector-scroll .docs-param-group { padding: 14px; }
+.docs-glass-inspector-scroll .docs-param-row { grid-template-columns: minmax(0, 1fr) 68px 54px 20px; gap: 6px; }
+.docs-glass-inspector-scroll .docs-param-name { display: grid; grid-template-columns: 4px minmax(0, 1fr); column-gap: 6px; }
+.docs-glass-inspector-scroll .docs-param-name code { overflow-wrap: anywhere; }
+.docs-glass-inspector-scroll .docs-param-name small { grid-column: 2; }
+.docs-glass-inspector-scroll .docs-param-group > header { flex-wrap: wrap; }
+.docs-glass-inspector-scroll .docs-variant-list, .docs-glass-inspector-scroll .docs-anatomy-grid { grid-template-columns: minmax(0, 1fr); }
+.docs-glass-inspector-scroll .docs-footer { flex-direction: column; margin-top: 24px; }
+
+@media (max-width: 1000px) {
+  .docs-site--glass .docs-layout { display: flex; flex-direction: column; }
+  .docs-site--glass .docs-sidebar { flex: none; border-right: 0; border-bottom: 1px solid var(--docs-line); }
+  .docs-site--glass .docs-sidebar-inner { display: flex; flex-direction: row; align-items: center; gap: 8px; height: 52px; padding: 8px 12px; overflow-x: auto; overflow-y: hidden; }
+  .docs-site--glass .docs-search { flex: 0 0 170px; }
+  .docs-site--glass .docs-sidebar-meta, .docs-site--glass .docs-nav-caption, .docs-site--glass .docs-sidebar-footer { display: none; }
+  .docs-site--glass .docs-nav-group { display: flex; flex: none; margin: 0; }
+  .docs-site--glass .docs-nav-group nav { display: flex; gap: 6px; max-width: none; margin-top: 0; overflow: visible; }
+  .docs-site--glass .docs-component-link { flex: none; min-height: 29px; padding: 0 8px; border: 1px solid var(--docs-line); white-space: nowrap; }
+  .docs-site--glass .docs-component-link small { display: none; }
+  .docs-site--glass .docs-main { flex: 1; padding: 12px; }
+  .docs-site--glass .docs-hero { margin: 10px 0 12px; }
+  .docs-site--glass .docs-source-link { display: none; }
+}
+
+@media (max-width: 700px) {
+  .docs-site--glass .docs-hero h1 { font-size: 20px; }
+  .docs-site--glass .docs-hero h1 span { font-size: 12px; }
+  .docs-site--glass .docs-hero p, .docs-site--glass .docs-breadcrumb { display: none; }
+  .docs-site--glass .docs-workbench--glass { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(230px, 1fr) minmax(0, 1fr); gap: 10px; }
+  .docs-workbench--glass > .docs-preview-panel { padding: 12px; }
+  .docs-workbench--glass .docs-preview-panel .docs-panel-heading { min-height: 0; }
+  .docs-workbench--glass .docs-preview-panel .docs-panel-heading p, .docs-workbench--glass .docs-state-line { display: none; }
+  .docs-workbench--glass .docs-preview-panel .docs-preview-surface { margin-top: 8px; padding: 8px; }
+  .docs-workbench--glass .docs-glass-backgrounds { gap: 8px; }
+  .docs-workbench--glass .docs-glass-background h3 { margin-bottom: 3px; font-size: 10px; }
+  .docs-workbench--glass .docs-glass-stage-text { padding: 10px; }
+}
+
 @media (max-width: 1140px) {
   .docs-workbench { grid-template-columns: minmax(0, 1fr); }
+  .docs-param-groups { grid-template-columns: minmax(0, 1fr); }
   .docs-inspector-body { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .docs-control-block { grid-column: 1 / -1; }
   .docs-variant-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -228,3 +401,5 @@
   .docs-anatomy-grid { grid-template-columns: 1fr; }
   .docs-variant-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+.docs-glass-button-group-demo { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.docs-glass-button-group-demo > span { color: var(--mac-text-secondary); font-size: 12px; }

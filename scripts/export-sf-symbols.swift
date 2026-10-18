@@ -4,6 +4,8 @@ import Foundation
 // Renders named system symbols into transparent masks for the web preview.
 // The theme keeps symbol names in the UI; run this on macOS after adding names.
 let symbolNames = [
+    "minus", "arrow.up.left.and.arrow.down.right", "app.badge", "menubar.dock.rectangle",
+    "arrow.down.circle", "icloud", "house", "dot.radiowaves.left.and.right", "network", "list.bullet", "folder.badge.plus", "macwindow",
     "archivebox", "arrow.clockwise", "arrow.down", "arrow.up.right",
     "arrowshape.turn.up.left", "arrowshape.turn.up.right", "bell", "bubble.left",
     "calendar", "checkmark", "chevron.down", "chevron.left", "chevron.right", "chevron.up.chevron.down",

@@ -1,5 +1,7 @@
 node_modules
 dist
+!vendor/squircle-kit/dist/
+!vendor/squircle-kit/dist/**
 dist-theme
 .DS_Store
 *.tsbuildinfo

@@ -1,0 +1,409 @@
+import {
+  computeCorners,
+  constrainRadii,
+  normalizeRadii,
+  smoothRoundRectPath
+} from "./chunk-TL7JX42L.js";
+
+// src/core.js
+var isBrowser = typeof window !== "undefined" && typeof document !== "undefined";
+var SVG_NS = "http://www.w3.org/2000/svg";
+var OVERLAY_ATTR = "data-squircle-border";
+var uid = 0;
+function systemSmoothing() {
+  if (!isBrowser) return 0;
+  const nav = navigator;
+  const p = nav.userAgentData && nav.userAgentData.platform || nav.platform || nav.userAgent || "";
+  return /mac|iphone|ipad|ipod/i.test(p) ? 0.6 : 0;
+}
+function parseSmoothing(v) {
+  if (v == null || v === "") return void 0;
+  if (typeof v === "number") return clamp01(v > 1 ? v / 100 : v);
+  const s = String(v).trim().toLowerCase();
+  if (s === "system-ui" || s === "auto") return systemSmoothing();
+  if (s === "none") return 0;
+  if (s.endsWith("%")) return clamp01(parseFloat(s) / 100);
+  const f = parseFloat(s);
+  return Number.isFinite(f) ? clamp01(f > 1 ? f / 100 : f) : void 0;
+}
+var clamp01 = (x) => Math.min(1, Math.max(0, x || 0));
+function parseRadius(v) {
+  if (v == null || v === "") return void 0;
+  if (v === "css" || v === "auto") return "css";
+  if (typeof v === "string") {
+    const parts = v.trim().split(/[\s,]+/).map(parseFloat).filter(Number.isFinite);
+    return parts.length === 1 ? parts[0] : parts.length ? parts : void 0;
+  }
+  return v;
+}
+function supportsClipPath() {
+  if (!isBrowser || !window.CSS || !CSS.supports) return false;
+  return CSS.supports("clip-path", 'path("M0 0L1 0L1 1Z")');
+}
+function toElements(target) {
+  if (!isBrowser || target == null) return [];
+  if (typeof target === "string") return Array.from(document.querySelectorAll(target));
+  if (target instanceof Element) return [target];
+  if (typeof target.length === "number") return Array.from(target).filter((n) => n instanceof Element);
+  return [];
+}
+function readCssRadii(el, w, h) {
+  const cs = getComputedStyle(el);
+  const one = (prop) => {
+    const raw = cs.getPropertyValue(prop).trim();
+    if (!raw) return 0;
+    const [a, b = a] = raw.split(/\s+/);
+    const px = (t, ref) => t.endsWith("%") ? parseFloat(t) / 100 * ref : parseFloat(t) || 0;
+    return Math.min(px(a, w), px(b, h));
+  };
+  return {
+    tl: one("border-top-left-radius"),
+    tr: one("border-top-right-radius"),
+    br: one("border-bottom-right-radius"),
+    bl: one("border-bottom-left-radius")
+  };
+}
+function readDataConfig(el) {
+  const d = el.dataset;
+  const cfg = {};
+  const r = parseRadius(d.squircleRadius ?? (d.squircle && d.squircle !== "true" ? d.squircle : void 0));
+  if (r !== void 0) cfg.radius = r;
+  const s = parseSmoothing(d.squircleSmoothing);
+  if (s !== void 0) cfg.smoothing = s;
+  if (d.squircleBorderWidth || d.squircleBorderColor || d.squircleBorderStyle) {
+    cfg.border = {
+      width: parseFloat(d.squircleBorderWidth) || 1,
+      color: d.squircleBorderColor,
+      style: d.squircleBorderStyle
+    };
+  }
+  return cfg;
+}
+var DEFAULTS = Object.freeze({
+  radius: "css",
+  smoothing: 0.6,
+  border: null,
+  precision: 2
+});
+var SmoothCorners = class {
+  /** @param {Partial<import('./index').SmoothCornersConfig>} [defaults] */
+  constructor(defaults = {}) {
+    this.defaults = { ...DEFAULTS, ...defaults };
+    this._registry = /* @__PURE__ */ new WeakMap();
+    this._tracked = /* @__PURE__ */ new Set();
+    this._supported = supportsClipPath();
+    this._ro = isBrowser && "ResizeObserver" in window ? new ResizeObserver((entries) => {
+      for (const e of entries) {
+        const st = this._registry.get(e.target);
+        if (!st) continue;
+        const box = e.borderBoxSize && e.borderBoxSize[0];
+        const w = box ? box.inlineSize : e.target.offsetWidth;
+        const h = box ? box.blockSize : e.target.offsetHeight;
+        this._render(e.target, st, w, h);
+      }
+    }) : null;
+    this._mo = null;
+  }
+  /** Apply to a selector, element, or list. Re-applying merges config. */
+  apply(target, config = {}) {
+    for (const el of toElements(target)) this._attach(el, config);
+    return this;
+  }
+  /** Apply the same config to many targets. */
+  applyAll(target, config = {}) {
+    return this.apply(target, config);
+  }
+  /**
+   * Picks up every `[data-squircle]` element. With `{ observe: true }` it also
+   * watches the DOM and attaches/detaches as nodes come and go.
+   */
+  auto({ root = isBrowser ? document : null, observe = false } = {}) {
+    if (!root) return 0;
+    const els = root.querySelectorAll("[data-squircle]");
+    els.forEach((el) => this._attach(el, {}, true));
+    if (observe && !this._mo && "MutationObserver" in window) {
+      this._mo = new MutationObserver((muts) => {
+        for (const m of muts) {
+          if (m.type === "attributes") {
+            const el = m.target;
+            if (el.hasAttribute("data-squircle")) this._attach(el, {}, true);
+            else if (this._registry.has(el)) this.remove(el);
+            continue;
+          }
+          m.addedNodes.forEach((n) => {
+            if (!(n instanceof Element)) return;
+            if (n.matches("[data-squircle]")) this._attach(n, {}, true);
+            n.querySelectorAll("[data-squircle]").forEach((c) => this._attach(c, {}, true));
+          });
+          m.removedNodes.forEach((n) => {
+            if (!(n instanceof Element) || n.isConnected) return;
+            if (this._registry.has(n)) this.remove(n);
+            n.querySelectorAll("[data-squircle]").forEach((c) => this._registry.has(c) && this.remove(c));
+          });
+        }
+      });
+      this._mo.observe(root === document ? document.documentElement : root, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: [
+          "data-squircle",
+          "data-squircle-radius",
+          "data-squircle-smoothing",
+          "data-squircle-border-width",
+          "data-squircle-border-color",
+          "data-squircle-border-style"
+        ]
+      });
+    }
+    return els.length;
+  }
+  /** Merge new options into already-applied elements. */
+  update(target, config = {}) {
+    for (const el of toElements(target)) {
+      const st = this._registry.get(el);
+      if (!st) continue;
+      st.config = mergeConfig(st.config, config);
+      if ("radius" in config) st.cssRadii = null;
+      this._syncBorder(el, st);
+      this._render(el, st);
+    }
+    return this;
+  }
+  /** Remove the effect and restore the element's original inline styles. */
+  remove(target) {
+    for (const el of toElements(target)) {
+      const st = this._registry.get(el);
+      if (!st) continue;
+      this._ro && this._ro.unobserve(el);
+      for (const [k, v] of Object.entries(st.saved)) el.style.setProperty(k, v.value, v.priority);
+      if (st.overlay) st.overlay.remove();
+      el.removeAttribute("data-squircle-applied");
+      this._registry.delete(el);
+      this._tracked.delete(el);
+    }
+    return this;
+  }
+  /** Debug info: resolved config, size, effective per-corner radius/smoothing. */
+  inspect(el) {
+    const st = this._registry.get(el);
+    if (!st) return null;
+    const { w, h } = st;
+    const radii = this._resolveRadii(el, st, w, h);
+    const corners = computeCorners(0, 0, w, h, st.smoothing, radii).map((c, i) => ({
+      corner: ["top-left", "top-right", "bottom-right", "bottom-left"][i],
+      radius: c.radius,
+      smoothingIn: c.s1,
+      smoothingOut: c.s2
+    }));
+    return {
+      config: { ...st.config },
+      smoothing: st.smoothing,
+      size: { width: w, height: h },
+      radii: constrainRadii(w, h, normalizeRadii(radii)),
+      corners,
+      path: st.path,
+      mode: this._supported ? "clip-path" : "border-radius-fallback"
+    };
+  }
+  has(el) {
+    return this._registry.has(el);
+  }
+  /** Detach everything and disconnect observers. */
+  destroy() {
+    for (const el of Array.from(this._tracked)) this.remove(el);
+    this._ro && this._ro.disconnect();
+    this._mo && this._mo.disconnect();
+    this._mo = null;
+  }
+  // -------------------------------------------------------------------------
+  _attach(el, config, fromData = false) {
+    const existing = this._registry.get(el);
+    const dataCfg = readDataConfig(el);
+    if (existing) {
+      existing.config = fromData ? mergeConfig(existing.config, dataCfg) : mergeConfig(existing.config, config);
+      existing.cssRadii = null;
+      this._syncBorder(el, existing);
+      this._render(el, existing);
+      return;
+    }
+    const st = {
+      id: ++uid,
+      config: mergeConfig(mergeConfig(this.defaults, dataCfg), config),
+      saved: {},
+      overlay: null,
+      cssRadii: null,
+      path: "",
+      w: el.offsetWidth,
+      h: el.offsetHeight,
+      smoothing: 0
+    };
+    this._registry.set(el, st);
+    this._tracked.add(el);
+    el.setAttribute("data-squircle-applied", "");
+    this._syncBorder(el, st);
+    this._render(el, st);
+    this._ro && this._ro.observe(el, { box: "border-box" });
+  }
+  _save(el, st, prop) {
+    if (prop in st.saved) return;
+    st.saved[prop] = { value: el.style.getPropertyValue(prop), priority: el.style.getPropertyPriority(prop) };
+  }
+  _resolveRadii(el, st, w, h) {
+    const r = st.config.radius;
+    if (r !== "css") return r;
+    if (!st.cssRadii) {
+      const prev = el.style.getPropertyValue("border-radius");
+      if ("border-radius" in st.saved) el.style.setProperty("border-radius", st.saved["border-radius"].value);
+      st.cssRadii = readCssRadii(el, w, h);
+      if ("border-radius" in st.saved) el.style.setProperty("border-radius", prev);
+    }
+    return st.cssRadii;
+  }
+  _render(el, st, w = el.offsetWidth, h = el.offsetHeight) {
+    st.w = w;
+    st.h = h;
+    st.smoothing = parseSmoothing(st.config.smoothing) ?? 0;
+    const radii = this._resolveRadii(el, st, w, h);
+    if (!this._supported) {
+      const { tl, tr, br, bl } = normalizeRadii(radii);
+      this._save(el, st, "border-radius");
+      el.style.borderRadius = `${tl}px ${tr}px ${br}px ${bl}px`;
+      return;
+    }
+    if (!(w > 0) || !(h > 0)) return;
+    const prec = st.config.precision;
+    st.path = smoothRoundRectPath(0, 0, w, h, st.smoothing, radii, { precision: prec });
+    this._save(el, st, "clip-path");
+    this._save(el, st, "-webkit-clip-path");
+    this._save(el, st, "border-radius");
+    const cp = `path('${st.path}')`;
+    el.style.setProperty("clip-path", cp);
+    el.style.setProperty("-webkit-clip-path", cp);
+    el.style.setProperty("border-radius", "0");
+    if (st.overlay) this._renderBorder(st, w, h, radii);
+  }
+  _syncBorder(el, st) {
+    const b = normalizeBorder(st.config.border);
+    if (!b) {
+      if (st.overlay) st.overlay.remove();
+      st.overlay = null;
+      return;
+    }
+    if (!this._supported) {
+      this._save(el, st, "border");
+      el.style.border = `${b.width}px ${b.style} ${b.color}`;
+      return;
+    }
+    if (!st.overlay) {
+      if (VOID_ELEMENTS.has(el.tagName)) {
+        if (typeof console !== "undefined") console.warn("[smooth-corners] border overlay needs a container element, got <" + el.tagName.toLowerCase() + ">");
+        return;
+      }
+      if (getComputedStyle(el).position === "static") {
+        this._save(el, st, "position");
+        el.style.position = "relative";
+      }
+      const svg = document.createElementNS(SVG_NS, "svg");
+      svg.setAttribute(OVERLAY_ATTR, "");
+      svg.setAttribute("aria-hidden", "true");
+      svg.setAttribute("focusable", "false");
+      svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:var(--squircle-border-z,auto)";
+      const defs2 = document.createElementNS(SVG_NS, "defs");
+      const path2 = document.createElementNS(SVG_NS, "path");
+      path2.setAttribute("fill", "none");
+      path2.setAttribute("vector-effect", "non-scaling-stroke");
+      svg.append(defs2, path2);
+      el.prepend(svg);
+      st.overlay = svg;
+    }
+    st.border = b;
+    const [defs, path] = st.overlay.children;
+    defs.textContent = "";
+    if (b.gradient && b.gradient.length) {
+      const gid = `sq-grad-${st.id}`;
+      const g = document.createElementNS(SVG_NS, "linearGradient");
+      g.id = gid;
+      const a = ((b.angle ?? 135) - 90) * (Math.PI / 180);
+      g.setAttribute("x1", String(0.5 - Math.cos(a) / 2));
+      g.setAttribute("y1", String(0.5 - Math.sin(a) / 2));
+      g.setAttribute("x2", String(0.5 + Math.cos(a) / 2));
+      g.setAttribute("y2", String(0.5 + Math.sin(a) / 2));
+      for (const stop of b.gradient) {
+        const s = document.createElementNS(SVG_NS, "stop");
+        s.setAttribute("offset", String(stop.offset));
+        s.setAttribute("stop-color", stop.color);
+        g.append(s);
+      }
+      defs.append(g);
+      path.setAttribute("stroke", `url(#${gid})`);
+    } else {
+      path.setAttribute("stroke", b.color);
+    }
+    path.setAttribute("stroke-width", String(b.width * (b.followSurface ? 2 : 1)));
+    path.setAttribute("stroke-linecap", b.style === "dotted" ? "round" : "butt");
+    const dash = b.style === "dashed" ? `${b.width * 3} ${b.width * 2}` : b.style === "dotted" ? `0 ${b.width * 2}` : "";
+    if (dash) path.setAttribute("stroke-dasharray", dash);
+    else path.removeAttribute("stroke-dasharray");
+  }
+  _renderBorder(st, w, h, radii) {
+    const el = st.overlay.parentElement;
+    const cs = getComputedStyle(el);
+    const bl = parseFloat(cs.borderLeftWidth) || 0;
+    const bt = parseFloat(cs.borderTopWidth) || 0;
+    st.overlay.style.left = `${-bl}px`;
+    st.overlay.style.top = `${-bt}px`;
+    st.overlay.style.width = `${w}px`;
+    st.overlay.style.height = `${h}px`;
+    st.overlay.setAttribute("viewBox", `0 0 ${w} ${h}`);
+    if (st.border.followSurface) {
+      st.overlay.lastElementChild.setAttribute("d", st.path);
+      return;
+    }
+    const bw = st.border.width;
+    const half = bw / 2;
+    const r = normalizeRadii(radii);
+    const inset = { tl: Math.max(0, r.tl - half), tr: Math.max(0, r.tr - half), br: Math.max(0, r.br - half), bl: Math.max(0, r.bl - half) };
+    const d = smoothRoundRectPath(half, half, w - bw, h - bw, st.smoothing, inset, { precision: st.config.precision });
+    st.overlay.lastElementChild.setAttribute("d", d);
+  }
+};
+var VOID_ELEMENTS = /* @__PURE__ */ new Set(["IMG", "INPUT", "VIDEO", "CANVAS", "IFRAME", "TEXTAREA", "SELECT", "HR", "BR", "EMBED", "OBJECT"]);
+function normalizeBorder(b) {
+  if (!b) return null;
+  if (typeof b === "number") b = { width: b };
+  if (!(b.width > 0)) return null;
+  return {
+    width: b.width,
+    followSurface: b.followSurface === true,
+    color: b.color || "var(--squircle-border-color, currentColor)",
+    style: b.style === "dashed" || b.style === "dotted" ? b.style : "solid",
+    gradient: b.gradient,
+    angle: b.angle
+  };
+}
+function mergeConfig(base, over) {
+  const out = { ...base };
+  for (const [k, v] of Object.entries(over || {})) {
+    if (v === void 0) continue;
+    out[k] = k === "radius" ? parseRadius(v) : v;
+  }
+  return out;
+}
+var shared = null;
+function getSharedInstance() {
+  if (!shared) shared = new SmoothCorners();
+  return shared;
+}
+function squircle(target, config) {
+  return getSharedInstance().apply(target, config);
+}
+
+export {
+  systemSmoothing,
+  parseSmoothing,
+  supportsClipPath,
+  SmoothCorners,
+  getSharedInstance,
+  squircle
+};

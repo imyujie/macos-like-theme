@@ -1,3 +1,5 @@
+@import './floatingPanel.css';
+
 .macos-theme {
   color-scheme: light;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
@@ -27,11 +29,32 @@
   --mac-slider-tick: #b9bcc0;
   --mac-popup-material: rgba(248, 248, 249, 0.72);
   --mac-popup-outline: rgba(67, 67, 72, 0.3);
+  --mac-popup-edge-top: #fff;
+  --mac-popup-edge-bottom: #fff;
   --mac-tooltip-material: rgba(232, 233, 234, 0.94);
   --mac-tooltip-outline: rgba(68, 68, 72, 0.3);
-  --mac-popover-material: rgba(248, 251, 252, 0.86);
-  --mac-popover-arrow-material: #f8fbfc;
-  --mac-popover-outline: rgba(64, 66, 71, 0.38);
+  --mac-liquid-glass-selection: rgba(0, 0, 0, 0.07);
+  --mac-floating-panel-material: rgba(248, 251, 252, 0.72);
+  --mac-floating-panel-blur: 8px;
+  --mac-floating-panel-saturation: 1.45;
+  --mac-floating-panel-outline: rgba(64, 66, 71, 0.44);
+  --mac-floating-panel-radius: 20px;
+  --mac-floating-panel-edge-top: rgba(255, 255, 255, 0.65);
+  --mac-floating-panel-edge-middle: rgba(255, 255, 255, 0.8);
+  --mac-floating-panel-edge-bottom: rgba(255, 255, 255, 0.65);
+  --mac-floating-panel-shadow: 0 15px 34px rgba(24, 28, 35, .16), 0 2px 5px rgba(24, 28, 35, .07);
+  /* Legacy tokens remain available to consumers of the theme. */
+  --mac-popover-material: var(--mac-floating-panel-material);
+  --mac-popover-blur: var(--mac-floating-panel-blur);
+  --mac-popover-saturation: var(--mac-floating-panel-saturation);
+  --mac-popover-outline: var(--mac-floating-panel-outline);
+  --mac-popover-radius: var(--mac-floating-panel-radius);
+  --mac-popover-edge-top: var(--mac-floating-panel-edge-top);
+  --mac-popover-edge-middle: var(--mac-floating-panel-edge-middle);
+  --mac-popover-edge-bottom: var(--mac-floating-panel-edge-bottom);
+  --mac-popover-shadow: var(--mac-floating-panel-shadow);
+  --mac-popover-arrow-material: var(--mac-floating-panel-material);
+  --mac-popover-arrow-shadow: transparent;
   --mac-separator: rgba(60, 60, 67, 0.13);
   --mac-border: rgba(51, 51, 57, 0.17);
   --mac-glass: rgba(247, 248, 251, 0.77);
@@ -73,11 +96,19 @@
   --mac-slider-tick: #777b84;
   --mac-popup-material: rgba(43, 45, 49, 0.78);
   --mac-popup-outline: rgba(255, 255, 255, 0.2);
+  --mac-popup-edge-top: rgba(255, 255, 255, 0.16);
+  --mac-popup-edge-bottom: rgba(255, 255, 255, 0.1);
   --mac-tooltip-material: rgba(72, 74, 79, 0.94);
   --mac-tooltip-outline: rgba(255, 255, 255, 0.28);
-  --mac-popover-material: rgba(42, 46, 51, 0.86);
-  --mac-popover-arrow-material: #2a2e33;
-  --mac-popover-outline: rgba(255, 255, 255, 0.31);
+  --mac-liquid-glass-selection: rgba(255, 255, 255, 0.14);
+  --mac-floating-panel-material: rgba(64, 68, 72, 0.5);
+  --mac-floating-panel-outline: rgba(255, 255, 255, 0.22);
+  --mac-floating-panel-radius: 22px;
+  --mac-floating-panel-edge-top: rgba(255, 255, 255, 0.03);
+  --mac-floating-panel-edge-middle: rgba(255, 255, 255, 0.18);
+  --mac-floating-panel-edge-bottom: rgba(255, 255, 255, 0.03);
+  --mac-popover-arrow-shadow: rgba(0, 0, 0, 0.75);
+  --mac-floating-panel-shadow: 0 0 0 .5px rgba(0, 0, 0, .75), 0 14px 28px rgba(0, 0, 0, .22), 0 3px 8px rgba(0, 0, 0, .12);
   --mac-separator: rgba(255, 255, 255, 0.11);
   --mac-border: rgba(255, 255, 255, 0.16);
   --mac-glass: rgba(39, 42, 48, 0.76);
@@ -119,11 +150,19 @@
     --mac-slider-tick: #777b84;
     --mac-popup-material: rgba(43, 45, 49, 0.78);
     --mac-popup-outline: rgba(255, 255, 255, 0.2);
+    --mac-popup-edge-top: rgba(255, 255, 255, 0.16);
+    --mac-popup-edge-bottom: rgba(255, 255, 255, 0.1);
     --mac-tooltip-material: rgba(72, 74, 79, 0.94);
     --mac-tooltip-outline: rgba(255, 255, 255, 0.28);
-    --mac-popover-material: rgba(42, 46, 51, 0.86);
-    --mac-popover-arrow-material: #2a2e33;
-    --mac-popover-outline: rgba(255, 255, 255, 0.31);
+      --mac-liquid-glass-selection: rgba(255, 255, 255, 0.14);
+    --mac-floating-panel-material: rgba(64, 68, 72, 0.5);
+    --mac-floating-panel-outline: rgba(255, 255, 255, 0.22);
+    --mac-floating-panel-radius: 22px;
+    --mac-floating-panel-edge-top: rgba(255, 255, 255, 0.03);
+    --mac-floating-panel-edge-middle: rgba(255, 255, 255, 0.18);
+    --mac-floating-panel-edge-bottom: rgba(255, 255, 255, 0.03);
+    --mac-popover-arrow-shadow: rgba(0, 0, 0, 0.75);
+    --mac-floating-panel-shadow: 0 0 0 .5px rgba(0, 0, 0, .75), 0 14px 28px rgba(0, 0, 0, .22), 0 3px 8px rgba(0, 0, 0, .12);
     --mac-separator: rgba(255, 255, 255, 0.11);
     --mac-border: rgba(255, 255, 255, 0.16);
     --mac-glass: rgba(39, 42, 48, 0.76);
@@ -241,7 +280,7 @@
 .mac-icon-button-surface { z-index: -1; background: var(--mac-control); }
 .mac-icon-button-border { z-index: 1; border: 1px solid var(--mac-icon-outline, var(--mac-border)); }
 .mac-icon-button-border[data-mac-corners="clippath"] { border-width: 0; }
-.mac-icon-button-border > .cornerkit-border { z-index: 0; }
+.mac-icon-button-border > [data-squircle-border] { --squircle-border-z: 0; }
 .mac-icon-button:has(> .mac-icon-button-surface):hover .mac-icon-button-surface { background: var(--mac-control-hover); }
 .mac-icon-button:has(> .mac-icon-button-surface):active .mac-icon-button-surface { background: var(--mac-control-pressed); }
 .mac-icon-button[data-variant="glass"]:has(> .mac-icon-button-surface) { --mac-icon-outline: rgba(255,255,255,.46); }
@@ -251,6 +290,121 @@
   -webkit-backdrop-filter: blur(18px) saturate(1.4);
 }
 .mac-icon-button:has(> .mac-icon-button-surface) > .sf-symbol { position: relative; z-index: 0; }
+
+/* Liquid Glass button — silhouette, refraction, inner rim light and outer
+   shadow come from the engine. No extra theme outline or inner glow. */
+.glass-surface.mac-liquid-glass-button {
+  font-size: 13px;
+  font-weight: 600;
+  transform-origin: center;
+  transition: opacity .26s ease-out, transform .14s cubic-bezier(.2, .8, .2, 1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .04);
+}
+.glass-surface.mac-liquid-glass-button--pressed { transform: translateZ(0) scale(1.1); }
+.glass-surface.mac-liquid-glass-button:has(.mac-liquid-glass-button-control:active) { transform: translateZ(0) scale(1.1); }
+.glass-surface[data-force-css-fallback] { isolation: auto; }
+.glass-surface[data-force-css-fallback]:not(.mac-liquid-glass-button--pressed) { transform: none; }
+.glass-surface[data-force-css-fallback] .glass-surface__material { isolation: auto; }
+.mac-liquid-glass-button .glass-surface__content { padding: 0; }
+.mac-liquid-glass-button-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  height: 100%;
+  padding: 0 14px;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: var(--mac-liquid-glass-ink, var(--mac-text));
+  font: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: default;
+}
+.mac-liquid-glass-button--icon .mac-liquid-glass-button-control { padding: 0; }
+.glass-surface.mac-liquid-glass-search { min-width: 0; color: var(--mac-text); box-shadow: 0 0 0 4px transparent; transition: box-shadow 160ms ease-out, opacity .26s ease-out; }
+.mac-liquid-glass-search .glass-surface__content { padding: 0; }
+.mac-liquid-glass-search-control { display: flex; align-items: center; gap: 9px; width: 100%; height: 100%; padding-inline: var(--mac-glass-search-padding); border-radius: inherit; color: var(--mac-text-secondary); }
+.mac-liquid-glass-search-input { flex: 1; min-width: 0; width: 100%; height: 100%; padding: 0; border: 0; outline: none; border-radius: 0; background: transparent; color: var(--mac-text); font: inherit; font-size: var(--mac-glass-search-font-size); font-weight: 550; appearance: none; -webkit-appearance: none; }
+.mac-liquid-glass-search-input::placeholder { color: var(--mac-text-secondary); opacity: .8; }
+.mac-liquid-glass-search-input::-webkit-search-cancel-button, .mac-liquid-glass-search-input::-webkit-search-decoration { display: none; -webkit-appearance: none; }
+.mac-liquid-glass-search .mac-liquid-glass-search-input:focus-visible { outline: none; }
+.mac-liquid-glass-search:focus-within {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--mac-focus);
+  animation: mac-glass-search-focus-in 220ms ease-out;
+}
+@keyframes mac-glass-search-focus-in {
+  from { box-shadow: 0 0 0 16px transparent; }
+  to { box-shadow: 0 0 0 4px var(--mac-focus); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .glass-surface.mac-liquid-glass-search { transition: none; }
+  .mac-liquid-glass-search:focus-within { animation: none; }
+}
+.mac-liquid-glass-search-clear { display: grid; place-items: center; flex: none; width: 18px; height: 18px; padding: 0; border: 0; border-radius: 50%; background: var(--mac-text-secondary); color: var(--mac-window); cursor: pointer; }
+.mac-liquid-glass-search-clear[hidden] { display: none; }
+.mac-liquid-glass-search-clear:hover { background: var(--mac-text); }
+.mac-liquid-glass-search-clear:focus-visible { outline: 2px solid var(--mac-accent); outline-offset: 3px; }
+.mac-liquid-glass-search-control[data-disabled] { opacity: .4; cursor: default; }
+.mac-liquid-glass-button-control:focus-visible { outline: none; }
+.mac-liquid-glass-button:has(> .glass-surface__content > .mac-liquid-glass-button-control:focus-visible) { outline: 3px solid var(--mac-focus); outline-offset: 1px; }
+.mac-liquid-glass-button:has(> .glass-surface__content > .mac-liquid-glass-button-control:disabled) { opacity: 1; }
+.mac-liquid-glass-button:has(> .glass-surface__content > .mac-liquid-glass-button-control:disabled) .mac-liquid-glass-button-label { opacity: .4; }
+.mac-liquid-glass-button:has(> .glass-surface__content > .mac-liquid-glass-button-control:disabled) .mac-liquid-glass-button-control { pointer-events: none; }
+.mac-liquid-glass-button-selection {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.mac-liquid-glass-button-hover {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgb(0 0 0 / .06);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .12s ease-out;
+}
+.glass-surface.mac-liquid-glass-button--hovered .mac-liquid-glass-button-hover { opacity: 1; }
+.mac-liquid-glass-button-selection { background: var(--mac-liquid-glass-selection); }
+.mac-liquid-glass-button--prominent { --mac-liquid-glass-ink: #fff; }
+
+.glass-surface.mac-liquid-glass-button-group { flex: none; color: var(--mac-text); box-shadow: 0 4px 10px rgba(0, 0, 0, .04); }
+.mac-liquid-glass-button-group .glass-surface__content { padding: 0; }
+.mac-liquid-glass-button-group-controls { display: flex; flex-wrap: nowrap; align-items: stretch; height: 100%; padding-inline: 2px; border-radius: inherit; }
+.mac-liquid-glass-button-group-button {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: var(--mac-glass-button-group-size);
+  height: 100%;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: default;
+}
+.mac-liquid-glass-button-group-button[data-icon-only] { width: var(--mac-glass-button-group-size); padding: 0; }
+.mac-liquid-glass-button-group-button:first-child { border-start-start-radius: calc(var(--mac-glass-button-group-size) / 2); border-end-start-radius: calc(var(--mac-glass-button-group-size) / 2); }
+.mac-liquid-glass-button-group-button:last-child { border-start-end-radius: calc(var(--mac-glass-button-group-size) / 2); border-end-end-radius: calc(var(--mac-glass-button-group-size) / 2); }
+.mac-liquid-glass-button-group-button + .mac-liquid-glass-button-group-button::before { content: ''; position: absolute; inset-block: 22%; inset-inline-start: 0; width: 1px; background: color-mix(in srgb, var(--mac-text) 22%, transparent); pointer-events: none; transition: opacity .12s ease-out; }
+.mac-liquid-glass-button-group-button::after { content: ''; position: absolute; z-index: -1; inset: 10%; border-radius: 999px; background: var(--mac-liquid-glass-selection); opacity: 0; pointer-events: none; transition: opacity .12s ease-out; }
+.mac-liquid-glass-button-group-button:not(:disabled):is(:hover, :active)::after, .mac-liquid-glass-button-group-button[aria-pressed="true"]::after { opacity: 1; }
+.mac-liquid-glass-button-group-controls:has(> .mac-liquid-glass-button-group-button:not(:disabled):hover) > .mac-liquid-glass-button-group-button::before { opacity: 0; }
+.mac-liquid-glass-button-group-button:disabled { color: color-mix(in srgb, var(--mac-text) 35%, transparent); }
+.mac-liquid-glass-button-group-button:focus-visible { z-index: 1; outline: 3px solid var(--mac-focus); outline-offset: -3px; }
 
 .mac-input {
   width: 100%;
@@ -279,9 +433,12 @@
   pointer-events: none;
 }
 .mac-input-surface { z-index: -1; background: var(--mac-control); box-shadow: inset 0 1px 1px rgba(0,0,0,.025); }
+.mac-input-surface[data-mac-corners="clippath"] { box-shadow: none; }
 .mac-input-border { z-index: 1; border: 1px solid var(--mac-input-outline); }
 .mac-input-border[data-mac-corners="clippath"] { border-width: 0; }
-.mac-input-border > .cornerkit-border { z-index: 0; }
+.mac-input-border > [data-squircle-border] { --squircle-border-z: 0; }
+.mac-input-frame[data-shape="capsule"],
+.mac-input-frame[data-shape="capsule"] > :is(.mac-input-surface, .mac-input-border) { border-radius: 999px; }
 .mac-input-frame > .mac-input {
   position: relative;
   width: 100%;
@@ -293,7 +450,6 @@
 }
 .mac-input-frame:focus-within { --mac-input-outline: var(--mac-accent); }
 .mac-input-frame:focus-within > .mac-input-border { filter: drop-shadow(0 0 2px var(--mac-focus)); }
-.mac-input-frame:focus-within > .mac-input-border > .cornerkit-border path[stroke] { stroke-width: 2.5; }
 .mac-input-frame > .mac-input:focus-visible { outline: none; box-shadow: none; }
 .mac-input-frame:has(> .mac-input:disabled) { opacity: .48; }
 .mac-input-frame > .mac-input:disabled { opacity: 1; }
@@ -312,11 +468,14 @@
   outline: 3px solid var(--mac-focus);
   outline-offset: 1px;
 }
-.macos-theme :is(.mac-input, .mac-button, .mac-icon-button, .mac-checkbox, .mac-segmented-tab, .mac-menu-item):focus-visible {
+.macos-theme :is(.mac-input, .mac-button, .mac-icon-button, .mac-switch, .mac-checkbox, .mac-segmented-tab, .mac-menu-item):focus-visible {
   outline: none;
   box-shadow: inset 0 0 0 3px var(--mac-focus);
 }
 .macos-theme .mac-input-frame > .mac-input:focus-visible { outline: none; box-shadow: none; }
+.macos-theme :is(.mac-button, .mac-switch, .mac-segmented-tab, .mac-menu-item)[data-mac-corners="clippath"]:focus-visible,
+.macos-theme .mac-icon-button:has(> .mac-icon-button-border[data-mac-corners="clippath"]):focus-visible,
+.macos-theme .mac-checkbox:has(> .mac-checkbox-border[data-mac-corners="clippath"]):focus-visible { box-shadow: none; }
 
 .mac-select-trigger {
   gap: 10px;
@@ -346,53 +505,20 @@
 .mac-popup {
   min-width: 170px;
   padding: 5px;
-  border: 1px solid var(--mac-border);
-  border-radius: 12px;
-  background: var(--mac-glass-strong);
-  color: var(--mac-text);
-  box-shadow: none;
-  backdrop-filter: blur(28px) saturate(1.55);
-  -webkit-backdrop-filter: blur(28px) saturate(1.55);
-  outline: none;
-  transform-origin: var(--transform-origin);
   transition: opacity 120ms ease, transform 120ms ease;
 }
 .mac-popup[data-starting-style], .mac-popup[data-ending-style] { opacity: 0; transform: scale(.97); }
 .mac-select-popup,
 .mac-menu-popup {
-  position: relative;
+  --mac-floating-panel-radius: 12px;
+  --mac-floating-panel-surface-z: 0;
+  --mac-floating-panel-border-z: 2;
   z-index: 0;
-  overflow: visible;
-  border: 0;
-  background: transparent;
-  box-shadow: var(--mac-popup-shadow);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
 }
 .mac-select-popup {
   min-width: max(184px, var(--anchor-width, 0px));
   max-width: min(320px, calc(100vw - 16px));
 }
-.mac-popup-backdrop,
-.mac-popup-border {
-  position: absolute;
-  inset: 0;
-  border-radius: 12px;
-  pointer-events: none;
-}
-.mac-popup-backdrop {
-  z-index: 0;
-  background: var(--mac-popup-material);
-  box-shadow: inset 0 1px 0 0 #fff, inset 0 -1px 0 0 #fff;
-  backdrop-filter: blur(28px) saturate(1.55);
-  -webkit-backdrop-filter: blur(28px) saturate(1.55);
-}
-.mac-popup-border {
-  z-index: 2;
-  border: .5px solid var(--mac-popup-outline);
-}
-.mac-popup-border[data-mac-corners="clippath"] { border-width: 0; }
-.mac-popup-border > .cornerkit-border { z-index: 0; }
 .mac-select-popup[data-side="none"] {
   min-width: max(184px, calc(var(--anchor-width, 0px) + 14px));
   opacity: 1;
@@ -458,7 +584,7 @@
   gap: 8px;
   min-height: 28px;
   padding: 0 9px;
-  border-radius: 6px;
+  border-radius: 7px;
   font: inherit;
   cursor: default;
   outline: none;
@@ -466,6 +592,9 @@
 }
 .mac-menu-item[data-highlighted] { background: var(--mac-accent); color: #fff; }
 .mac-menu-item[data-disabled] { opacity: .45; }
+.mac-menu-submenu-trigger[data-popup-open] { background: var(--mac-accent); color: #fff; }
+.mac-menu-submenu-arrow { margin-inline-start: auto; }
+.mac-menu-submenu-arrow:dir(rtl) { transform: rotate(180deg); }
 .mac-select-item {
   display: grid;
   grid-template-columns: 12px minmax(0, 1fr);
@@ -479,6 +608,7 @@
 .mac-menu-separator { position: relative; z-index: 1; height: 1px; margin: 5px 7px; background: var(--mac-separator); }
 
 .mac-switch {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
@@ -508,6 +638,9 @@
   transition: transform 140ms ease;
 }
 .mac-switch[data-checked] .mac-switch-thumb { transform: translateX(12px); }
+.mac-switch-thumb[data-mac-corners="clippath"] { box-shadow: none; }
+.mac-switch-thumb-shadow { transition: transform 140ms ease; }
+.mac-switch[data-checked] .mac-switch-thumb-shadow { transform: translateX(12px); }
 
 .mac-checkbox, .mac-radio {
   display: inline-flex;
@@ -539,7 +672,7 @@
 .mac-checkbox-surface { z-index: -1; background: var(--mac-control); }
 .mac-checkbox-border { z-index: 1; border: 1px solid var(--mac-checkbox-outline); }
 .mac-checkbox-border[data-mac-corners="clippath"] { border-width: 0; }
-.mac-checkbox-border > .cornerkit-border { z-index: 0; }
+.mac-checkbox-border > [data-squircle-border] { --squircle-border-z: 0; }
 .mac-checkbox[data-checked], .mac-checkbox[data-indeterminate] { --mac-checkbox-outline: var(--mac-accent); color: #fff; }
 .mac-checkbox:is([data-checked], [data-indeterminate]) > .mac-checkbox-surface { background: var(--mac-accent); }
 .mac-checkbox-indicator { position: relative; z-index: 0; display: inline-flex; align-items: center; justify-content: center; }
@@ -552,11 +685,11 @@
   display: inline-flex;
   align-items: stretch;
   min-height: 28px;
-  padding: 2px;
+  padding: 3px;
   gap: 1px;
-  border: 1px solid var(--mac-border);
-  border-radius: 9px;
-  background: var(--mac-group);
+  border: 0;
+  border-radius: 999px;
+  background: var(--mac-button-secondary);
 }
 .mac-segmented:has(> .mac-segmented-surface) {
   position: relative;
@@ -565,33 +698,84 @@
   border: 0;
   background: transparent;
 }
-.mac-segmented-surface,
-.mac-segmented-border {
+.mac-segmented-surface {
   position: absolute;
   inset: 0;
-  border-radius: 9px;
+  border-radius: 999px;
   pointer-events: none;
 }
-.mac-segmented-surface { z-index: -1; background: var(--mac-group); }
-.mac-segmented-border { z-index: 1; border: 1px solid var(--mac-border); }
-.mac-segmented-border[data-mac-corners="clippath"] { border-width: 0; }
-.mac-segmented-border > .cornerkit-border { z-index: 0; }
+.mac-segmented-surface { z-index: -1; background: var(--mac-button-secondary); }
+.mac-segmented-border { display: none; }
 .mac-segmented-tab {
   position: relative;
   z-index: 0;
   min-width: 72px;
   padding: 0 11px;
   border: 0;
-  border-radius: 6px;
+  border-radius: 999px;
   background: transparent;
   color: var(--mac-text-secondary);
   font: inherit;
   font-weight: 550;
   cursor: default;
 }
-.mac-segmented-tab[data-active] { background: var(--mac-control); color: var(--mac-text); box-shadow: 0 1px 3px rgba(0,0,0,.13); }
+.mac-segmented-tab[data-active] { background: #fff; color: #1d1d1f; box-shadow: none; }
 .mac-segmented-tab:not([data-active]):hover { color: var(--mac-text); background: var(--mac-group-hover); }
+.mac-segmented-tab[data-mac-corners="clippath"] { box-shadow: none; }
+.mac-corner-shadow.mac-switch-thumb-shadow { z-index: 0; }
 .mac-tab-panel { outline: none; }
+
+.mac-liquid-glass-tabs .glass-surface__content { padding: 0; }
+.mac-liquid-glass-tabs-list {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  height: 100%;
+  padding: var(--mac-glass-tabs-inset);
+  border-radius: inherit;
+  isolation: isolate;
+}
+.mac-liquid-glass-tabs-list > [role="tab"] {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0 calc(var(--mac-glass-tabs-size) * .32);
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--mac-text);
+  font: inherit;
+  font-size: var(--mac-glass-tabs-font-size);
+  font-weight: 550;
+  white-space: nowrap;
+  cursor: default;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 160ms ease-out, opacity 160ms ease-out;
+}
+.mac-liquid-glass-tabs-list > [role="tab"]:not([data-active]):not([data-disabled]):hover { background: color-mix(in srgb, var(--mac-text) 4%, transparent); }
+.mac-liquid-glass-tabs-list > [role="tab"][data-disabled] { opacity: .35; }
+.mac-liquid-glass-tabs-list > [role="tab"]:focus-visible { outline: 3px solid var(--mac-focus); outline-offset: 0; }
+.mac-liquid-glass-tabs-indicator {
+  position: absolute;
+  z-index: 0;
+  top: var(--active-tab-top);
+  left: var(--active-tab-left);
+  width: var(--active-tab-width);
+  height: var(--active-tab-height);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--mac-text) 9%, transparent);
+  pointer-events: none;
+  transition: left 220ms ease-out, top 220ms ease-out, width 220ms ease-out, height 220ms ease-out;
+}
+.mac-liquid-glass-tabs-indicator[data-activation-direction="none"] { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  .mac-liquid-glass-tabs-list > [role="tab"], .mac-liquid-glass-tabs-indicator { transition: none; }
+}
 
 .mac-slider-control { display: flex; align-items: center; width: 100%; min-width: 110px; height: 30px; touch-action: none; }
 .mac-slider-track { position: relative; width: 100%; height: 6px; border-radius: 999px; background: var(--mac-slider-track); }
@@ -613,8 +797,15 @@
 .mac-dialog-backdrop { position: fixed; inset: 0; z-index: 40; background: rgba(35,35,40,.12); }
 .macos-theme[data-appearance="dark"] .mac-dialog-backdrop { background: rgba(0,0,0,.42); }
 .mac-dialog-viewport { position: fixed; inset: 0; z-index: 41; display: grid; place-items: center; padding: 16px; }
-.mac-dialog-shadow-host { width: min(100%, 260px); max-height: calc(100vh - 32px); filter: drop-shadow(0 22px 19px rgba(0,0,0,.27)) drop-shadow(0 3px 4px rgba(0,0,0,.07)); }
+.mac-dialog-shadow-host { width: min(100%, 260px); max-height: calc(100vh - 32px); }
 .mac-dialog-popup {
+  --mac-dialog-material: var(--mac-popover-material);
+  --mac-dialog-outline: rgba(60,60,67,.35);
+  --mac-dialog-edge-top: rgba(255,255,255,.2);
+  --mac-dialog-edge-middle: rgba(255,255,255,.3);
+  --mac-dialog-edge-bottom: rgba(255,255,255,.2);
+  --mac-dialog-shadow: 0 22px 38px rgba(0,0,0,.18), 0 3px 8px rgba(0,0,0,.05);
+  --mac-dialog-text: var(--mac-text);
   position: relative;
   z-index: 0;
   width: 100%;
@@ -622,10 +813,9 @@
   overflow: visible;
   border: 0;
   background: transparent;
-  box-shadow: none;
-  color: var(--mac-text);
+  box-shadow: var(--mac-dialog-shadow);
+  color: var(--mac-dialog-text);
   outline: none;
-  --mac-dialog-outline: rgba(60,60,67,.35);
   transition: opacity 150ms ease, transform 150ms ease;
 }
 .mac-dialog-surface,
@@ -635,28 +825,59 @@
   border-radius: 28px;
   pointer-events: none;
 }
-.mac-dialog-surface { z-index: 0; background: var(--mac-window); }
-.mac-dialog-border { z-index: 2; border: 1px solid var(--mac-dialog-outline); }
+.mac-dialog-popup:has(> .mac-dialog-shadow) { box-shadow: none; }
+.mac-dialog-surface {
+  z-index: 0;
+  background: var(--mac-dialog-material);
+  box-shadow: inset 0 1px 0 var(--mac-dialog-edge-top), inset 0 -1px 0 var(--mac-dialog-edge-bottom);
+  backdrop-filter: blur(var(--mac-popover-blur)) saturate(1.2);
+  -webkit-backdrop-filter: blur(var(--mac-popover-blur)) saturate(1.2);
+}
+.mac-dialog-surface[data-mac-corners="clippath"] { box-shadow: none; }
+.mac-dialog-border { z-index: 2; border: .5px solid var(--mac-dialog-outline); }
 .mac-dialog-border[data-mac-corners="clippath"] { border-width: 0; }
-.mac-dialog-border > .cornerkit-border { z-index: 0; }
+.mac-dialog-border > [data-squircle-border] { --squircle-border-z: 0; }
 .mac-dialog-content {
   position: relative;
   z-index: 1;
   max-height: calc(100vh - 32px);
   overflow-y: auto;
-  padding: 17px 16px 16px;
+  padding: 20px 16px 16px;
 }
-.macos-theme[data-appearance="dark"] .mac-dialog-popup { --mac-dialog-outline: rgba(255,255,255,.24); }
+.macos-theme[data-appearance="dark"] .mac-dialog-popup {
+  --mac-dialog-outline: rgba(255,255,255,.19);
+  --mac-dialog-edge-top: rgba(255,255,255,.02);
+  --mac-dialog-edge-middle: rgba(255,255,255,.14);
+  --mac-dialog-edge-bottom: rgba(255,255,255,.02);
+  --mac-dialog-shadow: 0 0 0 .5px rgba(0,0,0,.65), 0 24px 48px rgba(0,0,0,.24), 0 3px 8px rgba(0,0,0,.1);
+  --mac-dialog-text: #e1e1e2;
+  --mac-button-secondary: rgba(255,255,255,.08);
+  --mac-button-secondary-hover: rgba(255,255,255,.13);
+  --mac-button-secondary-pressed: rgba(255,255,255,.18);
+  --mac-accent: #007aff;
+}
 @media (prefers-color-scheme: dark) {
   .macos-theme:not([data-appearance]) .mac-dialog-backdrop { background: rgba(0,0,0,.42); }
-  .macos-theme:not([data-appearance]) .mac-dialog-popup { --mac-dialog-outline: rgba(255,255,255,.24); }
+  .macos-theme:not([data-appearance]) .mac-dialog-popup {
+    --mac-dialog-outline: rgba(255,255,255,.19);
+    --mac-dialog-edge-top: rgba(255,255,255,.02);
+    --mac-dialog-edge-middle: rgba(255,255,255,.14);
+    --mac-dialog-edge-bottom: rgba(255,255,255,.02);
+    --mac-dialog-shadow: 0 0 0 .5px rgba(0,0,0,.65), 0 24px 48px rgba(0,0,0,.24), 0 3px 8px rgba(0,0,0,.1);
+    --mac-dialog-text: #e1e1e2;
+    --mac-button-secondary: rgba(255,255,255,.08);
+    --mac-button-secondary-hover: rgba(255,255,255,.13);
+    --mac-button-secondary-pressed: rgba(255,255,255,.18);
+    --mac-accent: #007aff;
+  }
 }
 .mac-dialog-popup[data-starting-style], .mac-dialog-popup[data-ending-style] { opacity: 0; transform: scale(.97) translateY(5px); }
 .mac-dialog-icon { display: block; width: 64px; height: 64px; margin-left: 6px; object-fit: contain; }
-.mac-dialog-title { margin: 17px 6px 0; font-size: 14px; line-height: 16px; font-weight: 700; letter-spacing: 0; }
-.mac-dialog-description { margin: 11px 6px 0; color: var(--mac-text); font-size: 13px; line-height: 17px; font-weight: 500; }
+.mac-dialog-title { margin: 18px 6px 0; font-size: 14px; line-height: 16px; font-weight: 700; letter-spacing: 0; }
+.mac-dialog-description { margin: 11px 6px 0; color: var(--mac-dialog-text); font-size: 13px; line-height: 17px; font-weight: 500; }
 .mac-dialog-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 17px; }
-.mac-dialog-actions .mac-button { min-height: 28px; padding: 0 6px; border-radius: 999px; font-size: 14px; font-weight: 500; }
+.mac-dialog-actions .mac-button { min-height: 28px; padding: 0 6px; border-radius: 999px; color: inherit; font-size: 14px; font-weight: 500; }
+.mac-dialog-actions .mac-button[data-variant="primary"] { color: #fff; }
 .mac-tooltip-popup {
   position: relative;
   isolation: isolate;
@@ -680,6 +901,7 @@
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
+.mac-tooltip-popup:has(> .mac-tooltip-shadow) { box-shadow: none; }
 .mac-tooltip-surface,
 .mac-tooltip-border {
   position: absolute;
@@ -695,7 +917,7 @@
 }
 .mac-tooltip-border { z-index: 1; border: .5px solid var(--mac-tooltip-outline); }
 .mac-tooltip-border[data-mac-corners="clippath"] { border-width: 0; }
-.mac-tooltip-border > .cornerkit-border { z-index: 0; }
+.mac-tooltip-border > [data-squircle-border] { --squircle-border-z: 0; }
 .mac-tooltip-content {
   position: relative;
   z-index: 0;
@@ -710,38 +932,22 @@
   z-index: 35;
 }
 .mac-popover-popup {
-  position: relative;
-  isolation: isolate;
   width: min(270px, calc(100vw - 24px));
-  border: 0;
-  border-radius: 20px;
-  background: transparent;
-  color: var(--mac-text);
-  box-shadow: 0 15px 34px rgba(24, 28, 35, .24), 0 2px 5px rgba(24, 28, 35, .12);
-  outline: none;
-  transform-origin: var(--transform-origin);
   transition: opacity 130ms ease, transform 130ms ease;
 }
 .mac-popover-popup[data-starting-style],
 .mac-popover-popup[data-ending-style] { opacity: 0; transform: scale(.98) translateY(-3px); }
-.mac-popover-surface,
-.mac-popover-border {
+.mac-corner-shadow {
   position: absolute;
   inset: 0;
-  border-radius: 20px;
+  z-index: -2;
+  overflow: visible;
   pointer-events: none;
 }
-.mac-popover-surface {
-  z-index: -1;
-  background: var(--mac-popover-material);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.95), inset 0 -1px 0 rgba(255,255,255,.65);
-  backdrop-filter: blur(30px) saturate(1.45);
-  -webkit-backdrop-filter: blur(30px) saturate(1.45);
-}
-.mac-popover-border { z-index: 1; border: .5px solid var(--mac-popover-outline); }
-.mac-popover-border[data-mac-corners="clippath"] { border-width: 0; }
-.mac-popover-border > .cornerkit-border { z-index: 0; }
+.mac-popover-popup[data-mac-popover-unified] > :is(.mac-popover-surface, .mac-popover-border) { inset: -12px; }
+.mac-popover-popup[data-mac-popover-unified] > .mac-popover-arrow > svg { visibility: hidden; }
 .mac-popover-arrow {
+  --mac-popover-arrow-edge: transparent;
   position: relative;
   z-index: 2;
   display: block;
@@ -750,14 +956,16 @@
   overflow: visible;
   pointer-events: none;
 }
-.mac-popover-arrow[data-side="bottom"] { top: -12px; }
-.mac-popover-arrow[data-side="top"] { bottom: -12px; rotate: 180deg; }
-.mac-popover-arrow[data-side="left"] { right: -20px; rotate: 90deg; }
-.mac-popover-arrow[data-side="right"] { left: -20px; rotate: -90deg; }
+.mac-popover-arrow[data-side="bottom"] { top: -12px; --mac-popover-arrow-edge: var(--mac-floating-panel-edge-middle); }
+.mac-popover-arrow[data-side="top"] { bottom: -12px; rotate: 180deg; --mac-popover-arrow-edge: var(--mac-floating-panel-edge-middle); }
+.mac-popover-arrow[data-side="left"] { right: -20px; rotate: 90deg; --mac-popover-arrow-edge: var(--mac-floating-panel-edge-bottom); }
+.mac-popover-arrow[data-side="right"] { left: -20px; rotate: -90deg; --mac-popover-arrow-edge: var(--mac-floating-panel-edge-top); }
 .mac-popover-arrow > svg { display: block; width: 32px; height: 16px; overflow: visible; }
 .mac-popover-arrow-fill { fill: var(--mac-popover-arrow-material); }
-.mac-popover-arrow-stroke { fill: none; stroke: var(--mac-popover-outline); stroke-width: .5px; stroke-linecap: round; }
-.mac-popover-content { position: relative; z-index: 0; padding: 7px 5px 8px; }
+.mac-popover-arrow-shadow { fill: none; stroke: var(--mac-popover-arrow-shadow); stroke-width: 1px; }
+.mac-popover-arrow-edge { fill: none; stroke: var(--mac-popover-arrow-edge); stroke-width: 2px; }
+.mac-popover-arrow-stroke { fill: none; stroke: var(--mac-floating-panel-outline); stroke-width: 1px; }
+.mac-popover-content { padding: 7px 5px 8px; }
 .mac-popover-title {
   margin: 0 7px 6px;
   color: var(--mac-text-secondary);
@@ -802,15 +1010,12 @@
 .mac-popover-tag-all .sf-symbol { flex: none; }
 
 @media (prefers-reduced-transparency: reduce) {
-  .mac-popup:not(.mac-select-popup), .mac-tooltip-popup, .mac-icon-button[data-variant="glass"] { background: var(--mac-window); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .mac-tooltip-popup, .mac-icon-button[data-variant="glass"] { background: var(--mac-window); backdrop-filter: none; -webkit-backdrop-filter: none; }
   .mac-icon-button[data-variant="glass"] > .mac-icon-button-surface { background: var(--mac-window); backdrop-filter: none; -webkit-backdrop-filter: none; }
-  .mac-tooltip-surface, .mac-popover-surface { background: var(--mac-window); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .mac-tooltip-surface, .mac-dialog-surface { background: var(--mac-window); backdrop-filter: none; -webkit-backdrop-filter: none; }
   .mac-popover-arrow-fill { fill: var(--mac-window); }
   .mac-sidebar-surface, .mac-toolbar-surface { backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .macos-theme *, .macos-theme *::before, .macos-theme *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
-
-/* Let CornerKit own the silhouette; keep the authored radius as a fallback. */
-.macos-theme [data-mac-corners="clippath"] { border-radius: 0 !important; }

@@ -1,9 +1,36 @@
 import './theme.css';
+import { macFloatingPanel } from './floatingPanel';
 
 export { SfSymbol } from './symbols';
+export { MacWindow } from './MacWindow';
+export type { MacWindowProps } from './MacWindow';
 export type { SfSymbolProps } from './symbols';
 export { MacPopoverArrowShape } from './PopoverArrowShape';
+export { LiquidGlassSearch } from './LiquidGlassSearch';
+export type { LiquidGlassSearchProps } from './LiquidGlassSearch';
+export { LiquidGlassTabs } from './LiquidGlassTabs';
+export type { LiquidGlassTabsListProps } from './LiquidGlassTabs';
+export { LiquidGlassButtonGroup } from './LiquidGlassButtonGroup';
+export type { LiquidGlassButtonGroupProps, LiquidGlassButtonGroupButtonProps } from './LiquidGlassButtonGroup';
 export { installMacCorners } from './corners';
+export {
+  LiquidGlassButton,
+  macLiquidGlassButtonMaterial,
+  macLiquidGlassButtonEngine,
+  macLiquidGlassButtonLightMaterial,
+  macLiquidGlassButtonLightEngine,
+  macLiquidGlassButtonDarkMaterial,
+  macLiquidGlassButtonCapsuleDarkMaterial,
+  macLiquidGlassButtonDarkEngine,
+  macLiquidGlassButtonNonProminentEngine,
+  macLiquidGlassButtonProminentMaterial,
+  macLiquidGlassButtonProminentEngine,
+} from './LiquidGlassButton';
+export type { LiquidGlassButtonProps, LiquidGlassButtonVariant } from './LiquidGlassButton';
+export { LiquidGlass, resolveGlassMaterial, useHdrDisplayRange } from '../liquid-glass/liquid-glass';
+export type { GlassMaterialInput, GlassMaterialMode, GlassMaterialParams, GlassMaterialName } from '../liquid-glass/liquid-glass';
+export { glassEngine, glassPointerHighlight, resolveGlassEngine, resolveGlassPointerHighlight } from '../liquid-glass/refraction/engine';
+export type { GlassEngineParams, GlassPointerHighlightParams } from '../liquid-glass/refraction/engine';
 
 /** Class names used on Base UI primitives. Theme styles are in `theme.css`. */
 export const mac = {
@@ -17,17 +44,24 @@ export const mac = {
   iconButton: 'mac-icon-button',
   iconButtonSurface: 'mac-icon-button-surface',
   iconButtonBorder: 'mac-icon-button-border',
+  liquidGlassButton: {
+    root: 'mac-liquid-glass-button',
+    control: 'mac-liquid-glass-button-control',
+    label: 'mac-liquid-glass-button-label',
+    selection: 'mac-liquid-glass-button-selection',
+  },
   input: 'mac-input',
   inputFrame: 'mac-input-frame',
   inputSurface: 'mac-input-surface',
   inputBorder: 'mac-input-border',
+  floatingPanel: macFloatingPanel,
   select: {
     trigger: 'mac-select-trigger',
     icon: 'mac-select-icon',
     positioner: 'mac-positioner mac-select-positioner',
-    popup: 'mac-popup mac-select-popup',
-    backdrop: 'mac-popup-backdrop',
-    border: 'mac-popup-border',
+    popup: `${macFloatingPanel.root} mac-popup mac-select-popup`,
+    backdrop: `${macFloatingPanel.surface} mac-popup-backdrop`,
+    border: `${macFloatingPanel.border} mac-popup-border`,
     scrollArrow: 'mac-select-scroll-arrow',
     list: 'mac-select-list',
     item: 'mac-menu-item mac-select-item',
@@ -47,18 +81,20 @@ export const mac = {
   },
   menu: {
     positioner: 'mac-positioner mac-menu-positioner',
-    popup: 'mac-popup mac-menu-popup',
-    backdrop: 'mac-popup-backdrop',
-    border: 'mac-popup-border',
+    popup: `${macFloatingPanel.root} mac-popup mac-menu-popup`,
+    backdrop: `${macFloatingPanel.surface} mac-popup-backdrop`,
+    border: `${macFloatingPanel.border} mac-popup-border`,
     item: 'mac-menu-item',
+    submenuTrigger: 'mac-menu-item mac-menu-submenu-trigger',
+    submenuArrow: 'mac-menu-submenu-arrow',
   },
   popover: {
     positioner: 'mac-positioner mac-popover-positioner',
-    popup: 'mac-popover-popup',
-    surface: 'mac-popover-surface',
-    border: 'mac-popover-border',
+    popup: `${macFloatingPanel.root} mac-popover-popup`,
+    surface: `${macFloatingPanel.surface} mac-popover-surface`,
+    border: `${macFloatingPanel.border} mac-popover-border`,
     arrow: 'mac-popover-arrow',
-    content: 'mac-popover-content',
+    content: `${macFloatingPanel.content} mac-popover-content`,
     title: 'mac-popover-title',
     search: 'mac-popover-search',
     tags: 'mac-popover-tags',
